@@ -1,0 +1,121 @@
+/* =========================================================
+   弹窗样式 modal.css
+   顾客评价弹幕弹窗（含打星表单）/ 菜品详情弹窗（规格+数量）
+   登录/注册弹窗（Tab 切换 + 表单校验）
+   ========================================================= */
+
+/* ---------- 弹幕弹窗 ---------- */
+.danmaku-dialog {
+  position: relative; width: min(860px, 94vw); max-height: 92vh; overflow-y: auto;
+  background: #fdf9f1; border-radius: 20px; padding: 22px 24px 24px; box-shadow: 0 24px 60px rgba(0,0,0,.35);
+  animation: pop .25s ease;
+}
+@keyframes pop { from { transform: scale(.92); opacity: 0; } }
+.danmaku-dish { display: flex; gap: 16px; align-items: center; margin-bottom: 14px; padding-right: 40px; }
+.danmaku-dish img { width: 86px; height: 86px; object-fit: cover; border-radius: 14px; flex: none; }
+.danmaku-dish h3 { font-size: 19px; }
+.danmaku-dish .meta { font-size: 13px; color: var(--ink-2); margin-top: 3px; }
+.danmaku-dish .price { color: var(--red); font-weight: bold; font-size: 18px; margin-left: 10px; }
+.danmaku-stage {
+  position: relative; height: 260px; border-radius: 14px; overflow: hidden;
+  background: radial-gradient(120% 160% at 20% 0%, #3b2a1a 0%, #241708 60%, #180f04 100%);
+}
+.stage-tip { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #caa877; font-size: 14px; letter-spacing: 2px; }
+.dm-item {
+  position: absolute; left: 100%; white-space: nowrap; padding: 6px 16px; border-radius: 999px;
+  font-size: 14.5px; color: #fff; background: rgba(255,255,255,.14);
+  will-change: transform; animation: fly linear forwards;
+}
+.dm-item b { color: #e8c98a; margin-right: 8px; font-size: 12.5px; font-weight: normal; }
+.dm-item i { font-style: normal; color: #e0aa4a; margin-right: 8px; }
+.dm-item small { color: rgba(255,255,255,.55); margin-left: 8px; font-size: 11.5px; }
+@keyframes fly { to { transform: translateX(calc(-100% - 100vw)); } }
+.danmaku-actions { display: flex; align-items: center; justify-content: space-between; margin: 14px 2px 4px; gap: 10px; flex-wrap: wrap; }
+.rate-chance { font-size: 13px; color: var(--ink-2); }
+.rate-chance strong { color: var(--red); }
+
+/* 打星表单（评价） */
+.review-form { margin-top: 10px; border-top: 1px dashed var(--line); padding-top: 14px; }
+.review-form h4 { font-size: 14.5px; margin-bottom: 10px; color: var(--primary-dark); }
+.star-picker { display: flex; align-items: center; gap: 4px; margin-bottom: 10px; }
+.star-pick { font-size: 28px; color: #e8dccd; cursor: pointer; transition: .15s; user-select: none; }
+.star-pick.on { color: var(--gold); text-shadow: 0 2px 8px rgba(227,162,58,.45); }
+.star-picker em { font-style: normal; font-size: 12.5px; color: var(--ink-2); margin-left: 10px; }
+.review-form textarea {
+  width: 100%; height: 64px; border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 12px; resize: none; outline: none; background: #fff;
+}
+.review-form textarea:focus { border-color: var(--primary); }
+.form-row { display: flex; gap: 10px; margin-top: 10px; }
+.form-row input {
+  flex: 1; border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; outline: none;
+}
+.form-row input:focus { border-color: var(--primary); }
+
+/* ---------- 菜品详情弹窗（规格选择 + 数量选择） ---------- */
+.dish-dialog {
+  position: relative; width: min(720px, 94vw); max-height: 92vh; overflow-y: auto;
+  background: #fdf9f1; border-radius: 20px; padding: 24px; box-shadow: 0 24px 60px rgba(0,0,0,.35);
+  animation: pop .25s ease;
+}
+.dish-detail { display: flex; gap: 18px; }
+.dish-detail .dd-pic { width: 220px; height: 220px; object-fit: cover; border-radius: 16px; flex: none; }
+.dish-detail .dd-info { flex: 1; min-width: 0; padding-right: 30px; }
+.dish-detail h3 { font-size: 22px; margin-bottom: 4px; }
+.dish-detail .dd-meta { font-size: 13px; color: var(--ink-2); margin-bottom: 8px; }
+.dish-detail .dd-price { font-size: 24px; font-weight: 900; color: var(--red); margin-bottom: 10px; }
+.dish-detail .dd-price small { font-size: 13px; font-weight: normal; color: var(--ink-2); }
+.dish-detail .dd-desc { font-size: 13.5px; color: var(--ink-2); background: #f7f0e1; border-radius: 10px; padding: 10px 12px; margin-bottom: 4px; }
+
+.spec-group { margin-top: 14px; }
+.spec-group .spec-label { font-size: 13.5px; color: var(--ink-2); margin-bottom: 8px; }
+.spec-group .spec-label b { color: var(--ink); }
+.spec-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.spec-opt {
+  padding: 7px 18px; border-radius: 10px; border: 1.5px solid var(--line);
+  background: #fff; font-size: 13.5px; color: var(--ink-2); transition: .15s;
+}
+.spec-opt:hover { border-color: var(--primary); color: var(--primary); }
+.spec-opt.on { border-color: var(--primary); background: #f3e7d6; color: var(--primary-dark); font-weight: bold; }
+
+.detail-buy { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--line); flex-wrap: wrap; }
+.detail-buy .qty-box { display: flex; align-items: center; gap: 12px; }
+.detail-buy .qty-box button {
+  width: 34px; height: 34px; border-radius: 10px; background: #f3e7d6;
+  font-size: 18px; color: var(--primary-dark); line-height: 1;
+}
+.detail-buy .qty-box button:hover { background: var(--primary); color: #fff; }
+.detail-buy .qty-box .num { min-width: 34px; text-align: center; font-size: 17px; font-weight: bold; }
+.detail-buy .sum { font-size: 14px; color: var(--ink-2); }
+.detail-buy .sum b { color: var(--red); font-size: 22px; }
+
+/* ---------- 登录 / 注册弹窗（Tab 切换） ---------- */
+.auth-dialog {
+  position: relative; width: min(400px, 92vw); background: #fdf9f1; border-radius: 20px;
+  padding: 24px 26px 26px; box-shadow: 0 24px 60px rgba(0,0,0,.35); animation: pop .25s ease;
+}
+.auth-tabs { display: flex; background: #f6ecdf; border-radius: 12px; padding: 4px; margin-bottom: 18px; }
+.auth-tab { flex: 1; padding: 9px 0; border-radius: 9px; font-size: 14.5px; color: var(--ink-2); transition: .2s; }
+.auth-tab.active { background: var(--primary); color: #fff; font-weight: bold; box-shadow: 0 4px 10px rgba(141,91,63,.35); }
+.auth-form { display: none; }
+.auth-form.on { display: block; }
+.auth-form .field { margin-bottom: 12px; }
+.auth-form label { display: block; font-size: 13px; color: var(--ink-2); margin-bottom: 5px; }
+.auth-form input[type="text"], .auth-form input[type="password"] {
+  width: 100%; border: 1.5px solid var(--line); border-radius: 10px;
+  padding: 10px 12px; outline: none; background: #fff; transition: .15s;
+}
+.auth-form input:focus { border-color: var(--primary); }
+.auth-form input.err { border-color: var(--red); background: #fff5f5; }
+.auth-form .err-msg { display: none; font-size: 12px; color: var(--red); margin-top: 4px; }
+.auth-form .field.invalid .err-msg { display: block; }
+.auth-agree { display: flex; align-items: flex-start; gap: 7px; font-size: 12.5px; color: var(--ink-2); margin: 4px 0 14px; cursor: pointer; }
+.auth-agree input { accent-color: var(--primary); margin-top: 3px; }
+.auth-tip { text-align: center; font-size: 12px; color: #a9906f; margin-top: 14px; }
+
+/* ---------- 弹窗响应式 ---------- */
+@media (max-width: 560px) {
+  .dish-detail { flex-direction: column; }
+  .dish-detail .dd-pic { width: 100%; height: 180px; }
+  .danmaku-stage { height: 210px; }
+}
