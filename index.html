@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>重庆科技大学食堂服务平台</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍚</text></svg>">
+  <!-- CSS 按公共样式与页面样式拆分 -->
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/home.css">
+  <link rel="stylesheet" href="css/canteen.css">
+  <link rel="stylesheet" href="css/modal.css">
+</head>
+<body>
+
+<!-- ============ 顶部标题栏 ============ -->
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="#/" id="brandLink">
+      <span class="brand-logo">🍚</span>
+      <span class="brand-text">
+        <strong>重庆科技大学食堂服务平台</strong>
+        <small>CQUST Canteen Service Platform</small>
+      </span>
+    </a>
+    <nav class="main-nav" id="mainNav">
+      <a href="#home" class="active">首页</a>
+      <a href="#canteens">食堂导航</a>
+      <a href="#hours">营业时间</a>
+      <a href="#dishes">菜品展示</a>
+      <a href="#today">今日菜单</a>
+      <a href="#shops">店铺与菜品</a>
+      <a href="#signature">特色招牌</a>
+      <a href="#reviews">顾客评价</a>
+      <a href="#order">提前点单</a>
+    </nav>
+    <div class="header-tools">
+      <span class="user-chip" id="userArea" hidden>
+        <span class="avatar">👤</span><span class="nick" id="userNick"></span>
+        <button class="logout" id="btnLogout">退出</button>
+      </span>
+      <button class="btn-login" id="btnLogin">登录 / 注册</button>
+      <button class="hamburger" id="hamburger" aria-label="菜单">☰</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- ==================== 首页视图 ==================== -->
+<div id="homeView">
+
+  <!-- 1. 轮播 Banner -->
+  <section class="hero" id="home">
+    <div class="carousel" id="carousel">
+      <div class="carousel-slides" id="carouselSlides"></div>
+      <button class="carousel-arrow prev" id="carouselPrev" aria-label="上一张">‹</button>
+      <button class="carousel-arrow next" id="carouselNext" aria-label="下一张">›</button>
+      <div class="carousel-dots" id="carouselDots"></div>
+    </div>
+    <div class="notice-marquee">
+      <span class="notice-icon">📢</span>
+      <div class="notice-track"><span id="noticeText"></span></div>
+    </div>
+  </section>
+
+  <!-- 2. 食堂选择导航 -->
+  <section class="section" id="canteens">
+    <div class="section-head">
+      <h2>食堂选择导航</h2>
+      <p>点击卡片进入对应食堂页面，查看档口、菜品与招牌</p>
+    </div>
+    <div class="canteen-grid" id="canteenGrid"></div>
+  </section>
+
+  <!-- 3. 营业时间 -->
+  <section class="section alt" id="hours">
+    <div class="section-head">
+      <h2>营业时间</h2>
+      <p>各食堂早 / 中 / 晚餐开放时段</p>
+    </div>
+    <div class="hours-grid" id="hoursGrid"></div>
+    <div class="holiday-notice" id="holidayNotice"></div>
+  </section>
+
+  <!-- 4. 菜品展示（含收藏） -->
+  <section class="section" id="dishes">
+    <div class="section-head">
+      <h2>菜品展示</h2>
+      <p>按口味筛选，点击 ♡ 收藏喜欢的菜品</p>
+    </div>
+    <div class="filter-bar">
+      <div class="chip-group" id="tasteFilter">
+        <button class="chip active" data-tag="全部">全部</button>
+        <button class="chip" data-tag="辣">辣 🌶️</button>
+        <button class="chip" data-tag="微辣">微辣</button>
+        <button class="chip" data-tag="清淡">清淡</button>
+        <button class="chip" data-tag="甜">甜 🍮</button>
+      </div>
+      <label class="fav-toggle"><input type="checkbox" id="favOnly"> 只看我的收藏 (<span id="favCount">0</span>)</label>
+      <select class="sort-select" id="dishSort" title="价格排序">
+        <option value="default">默认排序</option>
+        <option value="asc">价格从低到高 ↑</option>
+        <option value="desc">价格从高到低 ↓</option>
+      </select>
+    </div>
+    <div class="dish-grid" id="dishGrid"></div>
+  </section>
+
+  <!-- 5. 今日菜单 -->
+  <section class="section alt" id="today">
+    <div class="section-head">
+      <h2>今日菜单 <span class="date-badge" id="todayDate"></span></h2>
+      <p>按早餐 / 午餐 / 晚餐分类展示当日在售菜品</p>
+    </div>
+    <div class="meal-tabs" id="mealTabs">
+      <button class="meal-tab active" data-meal="早">🌅 早餐</button>
+      <button class="meal-tab" data-meal="午">🍛 午餐</button>
+      <button class="meal-tab" data-meal="晚">🌙 晚餐</button>
+    </div>
+    <div class="dish-grid" id="todayGrid"></div>
+  </section>
+
+  <!-- 板块一：店铺与菜品总览 -->
+  <section class="section" id="shops">
+    <div class="section-head">
+      <h2>店铺与菜品总览</h2>
+      <p>各食堂档口介绍与全部菜品、价格、图片一览</p>
+    </div>
+    <div class="chip-group" id="shopCanteenFilter"></div>
+    <div id="shopList"></div>
+  </section>
+
+  <!-- 板块二：特色招牌 -->
+  <section class="section alt" id="signature">
+    <div class="section-head">
+      <h2>特色招牌</h2>
+      <p>三类招牌，各有千秋</p>
+    </div>
+    <div class="sig-tabs" id="sigTabs">
+      <button class="sig-tab active" data-sig="manager">👑 店长推荐 · 最好吃</button>
+      <button class="sig-tab" data-sig="value">💰 高性价比 · 好吃不贵</button>
+      <button class="sig-tab" data-sig="student">🎓 同学推荐 · 人气之选</button>
+    </div>
+    <div class="sig-grid" id="sigGrid"></div>
+  </section>
+
+  <!-- 板块三：顾客评价（弹幕） -->
+  <section class="section" id="reviews">
+    <div class="section-head">
+      <h2>顾客评价与打星</h2>
+      <p>所有评语由就餐同学真实打星（满星 ⭐⭐⭐⭐⭐）· 每人每天 3 次评价机会 · 点击菜品，评价以弹幕形式依次弹出</p>
+    </div>
+    <div class="rule-bar">
+      <span>🎟️ 今日剩余评价机会：<strong id="rateLeft">3</strong> / 3</span>
+      <span>🖱️ 点击下方菜品卡片 → 弹幕查看全部评语 → 写下你的真实评价</span>
+    </div>
+    <div class="chip-group" id="reviewCanteenFilter"></div>
+    <div class="review-grid" id="reviewGrid"></div>
+  </section>
+
+  <!-- 板块四：提前点单 -->
+  <section class="section alt" id="order">
+    <div class="section-head">
+      <h2>提前点单领号</h2>
+      <p>避开高峰拥挤：选好想吃的 → 选就餐时段（8:00 - 21:00，每小时一档）→ 领号取餐</p>
+    </div>
+    <div class="order-wrap">
+      <div class="order-panel">
+        <div class="order-step">
+          <h3><i>1</i>选择档口</h3>
+          <div class="select-row">
+            <select id="orderCanteen"></select>
+            <select id="orderShop"></select>
+          </div>
+        </div>
+        <div class="order-step">
+          <h3><i>2</i>挑选菜品</h3>
+          <div class="order-dish-list" id="orderDishList"></div>
+        </div>
+        <div class="order-step">
+          <h3><i>3</i>选择就餐时段</h3>
+          <div class="slot-grid" id="slotGrid"></div>
+          <p class="slot-hint">时段为今日就餐时间，已过时段不可选</p>
+        </div>
+      </div>
+      <aside class="order-cart">
+        <h3>🧾 我的点单</h3>
+        <div class="cart-items" id="cartItems"><p class="empty-tip">还没有选菜，先挑几样想吃的吧～</p></div>
+        <div class="cart-total">合计：<strong id="cartTotal">¥0.0</strong></div>
+        <div class="cart-slot">就餐时段：<strong id="cartSlot">未选择</strong></div>
+        <button class="btn-primary btn-block" id="submitOrder">提交点单 · 领号</button>
+      </aside>
+    </div>
+    <div class="my-orders">
+      <h3>📋 我的取号单</h3>
+      <div id="orderList"><p class="empty-tip">暂无点单记录，去上面领一个号吧！</p></div>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== 食堂详情视图 ==================== -->
+<div id="canteenView" hidden>
+  <button class="btn-back" id="btnBack">← 返回平台首页</button>
+  <div class="canteen-hero" id="canteenHero"></div>
+  <div class="canteen-body">
+    <div class="canteen-info-card" id="canteenInfo"></div>
+    <h2 class="canteen-sub">🏪 档口与菜品</h2>
+    <div id="canteenShops"></div>
+  </div>
+</div>
+</main>
+
+<footer class="site-footer">
+  <p>🍚 重庆科技大学食堂服务平台 · 服务全校师生「干饭」事业</p>
+  <p>菜品价格以窗口实际售卖为准 · 评价内容来自同学们的真实反馈</p>
+</footer>
+
+<!-- ============ 菜品评价弹幕弹窗 ============ -->
+<div class="modal" id="danmakuModal" hidden>
+  <div class="modal-mask" id="danmakuMask"></div>
+  <div class="danmaku-dialog">
+    <button class="modal-close" id="danmakuClose">✕</button>
+    <div class="danmaku-dish" id="danmakuDish"></div>
+    <div class="danmaku-stage" id="danmakuStage">
+      <div class="stage-tip" id="stageTip">👆 评语弹幕即将开始 …</div>
+    </div>
+    <div class="danmaku-actions">
+      <button class="btn-ghost" id="danmakuReplay">🔄 重播弹幕</button>
+      <span class="rate-chance" id="rateChance">今日还可评价 3 次</span>
+    </div>
+    <div class="review-form" id="reviewForm">
+      <h4>✍️ 写下你的真实评价（今天吃过的菜）</h4>
+      <div class="star-picker" id="starPicker">
+        <span class="star-pick" data-v="1">★</span><span class="star-pick" data-v="2">★</span><span class="star-pick" data-v="3">★</span><span class="star-pick" data-v="4">★</span><span class="star-pick" data-v="5">★</span>
+        <em id="starHint">点击打星（满星 5 颗）</em>
+      </div>
+      <textarea id="reviewText" maxlength="60" placeholder="说点真实感受 / 需要改进的地方（60 字以内）…"></textarea>
+      <div class="form-row">
+        <input id="reviewUser" maxlength="12" placeholder="你的昵称（选填）">
+        <button class="btn-primary" id="submitReview">提交评价</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 菜品详情弹窗（规格选择 + 数量选择） ============ -->
+<div class="modal" id="dishModal" hidden>
+  <div class="modal-mask" id="dishMask"></div>
+  <div class="dish-dialog">
+    <button class="modal-close" id="dishClose">✕</button>
+    <div class="dish-detail">
+      <img class="dd-pic" id="ddImg" alt="">
+      <div class="dd-info">
+        <h3 id="ddName"></h3>
+        <p class="dd-meta" id="ddMeta"></p>
+        <p class="dd-price"><span id="ddPrice"></span> <small id="ddStock">今日在售 · 支持提前点单</small></p>
+        <p class="dd-desc" id="ddDesc"></p>
+        <div class="spec-group">
+          <p class="spec-label"><b>分量</b>（必选）</p>
+          <div class="spec-opts" id="specSize"></div>
+        </div>
+        <div class="spec-group" id="specSpicyGroup">
+          <p class="spec-label"><b>辣度</b>（可自由选择）</p>
+          <div class="spec-opts" id="specSpicy"></div>
+        </div>
+      </div>
+    </div>
+    <div class="detail-buy">
+      <div class="qty-box">
+        <span style="font-size:13.5px;color:var(--ink-2)">数量</span>
+        <button id="ddMinus">−</button><span class="num" id="ddNum">1</span><button id="ddPlus">＋</button>
+      </div>
+      <span class="sum">合计 <b id="ddSum">¥0</b></span>
+      <button class="btn-primary" id="ddAdd">加入点单</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 登录 / 注册弹窗（Tab 切换 + 表单校验） ============ -->
+<div class="modal" id="authModal" hidden>
+  <div class="modal-mask" id="authMask"></div>
+  <div class="auth-dialog">
+    <button class="modal-close" id="authClose">✕</button>
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login">登 录</button>
+      <button class="auth-tab" data-tab="register">注 册</button>
+    </div>
+    <!-- 登录表单 -->
+    <form class="auth-form on" id="loginForm" novalidate>
+      <div class="field">
+        <label>学号 / 昵称</label>
+        <input type="text" id="loginName" placeholder="请输入学号或昵称">
+        <p class="err-msg">请输入学号或昵称</p>
+      </div>
+      <div class="field">
+        <label>密码</label>
+        <input type="password" id="loginPwd" placeholder="请输入密码（至少 6 位）">
+        <p class="err-msg">密码不能为空且至少 6 位</p>
+      </div>
+      <button type="submit" class="btn-primary btn-block">登录</button>
+    </form>
+    <!-- 注册表单 -->
+    <form class="auth-form" id="regForm" novalidate>
+      <div class="field">
+        <label>昵称</label>
+        <input type="text" id="regNick" placeholder="给自己起个干饭昵称">
+        <p class="err-msg">昵称不能为空</p>
+      </div>
+      <div class="field">
+        <label>学号</label>
+        <input type="text" id="regSid" placeholder="11 位数字学号" maxlength="11">
+        <p class="err-msg">学号须为 11 位数字</p>
+      </div>
+      <div class="field">
+        <label>密码</label>
+        <input type="password" id="regPwd" placeholder="至少 6 位">
+        <p class="err-msg">密码至少 6 位</p>
+      </div>
+      <div class="field">
+        <label>确认密码</label>
+        <input type="password" id="regPwd2" placeholder="再输入一次密码">
+        <p class="err-msg">两次输入的密码不一致</p>
+      </div>
+      <label class="auth-agree"><input type="checkbox" id="regAgree"> 我已阅读并同意《食堂服务平台用户协议》</label>
+      <button type="submit" class="btn-primary btn-block">注册并登录</button>
+    </form>
+    <p class="auth-tip">演示环境：账号数据仅保存在本机浏览器</p>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
