@@ -1,0 +1,146 @@
+/* =========================================================
+   公共样式 common.css
+   变量 / 基础重置 / 顶部导航（含汉堡菜单）/ 页脚 / 通用按钮
+   筛选 chip / Toast / 弹窗基础结构 / 全局响应式
+   ========================================================= */
+:root {
+  --primary: #8d5b3f;      /* 焦糖咖棕：主色 */
+  --primary-dark: #6d442c; /* 深咖棕：标题/强调 */
+  --red: #c0392b;          /* 砖红：价格/错误提示 */
+  --gold: #e3a23a;         /* 蜂蜜金：星级 */
+  --bg: #f8f1e7;           /* 麦色奶油：页面底色 */
+  --card: #ffffff;
+  --ink: #33261a;          /* 深咖棕：正文 */
+  --ink-2: #7a6a5a;
+  --line: #ead9c5;
+  --shadow: 0 6px 24px rgba(109, 68, 44, .10);
+  --radius: 16px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+}
+img { display: block; max-width: 100%; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+select, input, textarea { font-family: inherit; font-size: 14px; }
+
+/* ---------- 顶部导航（全站共用） ---------- */
+.site-header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(250, 243, 233, .92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.header-inner {
+  max-width: 1200px; margin: 0 auto; padding: 10px 20px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); flex: none; }
+.brand-logo { font-size: 30px; }
+.brand-text strong { display: block; font-size: 18px; color: var(--primary-dark); letter-spacing: .5px; }
+.brand-text small { font-size: 11px; color: var(--ink-2); letter-spacing: 1px; }
+.main-nav { display: flex; gap: 2px; flex-wrap: wrap; }
+.main-nav a {
+  padding: 6px 12px; border-radius: 999px; font-size: 13.5px;
+  color: var(--ink-2); text-decoration: none; transition: .2s;
+}
+.main-nav a:hover { color: var(--primary-dark); background: #f1e3d2; }
+.main-nav a.active { color: #fff; background: var(--primary); }
+
+/* 登录区 + 汉堡按钮 */
+.header-tools { display: flex; align-items: center; gap: 10px; flex: none; }
+.user-chip { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--ink); }
+.user-chip .avatar {
+  width: 30px; height: 30px; border-radius: 50%; background: #efdec7;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 15px;
+}
+.user-chip .logout { font-size: 12px; color: var(--ink-2); text-decoration: underline; }
+.user-chip .logout:hover { color: var(--red); }
+.btn-login {
+  padding: 7px 18px; border-radius: 999px; font-size: 13.5px; font-weight: bold;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff;
+}
+.hamburger { display: none; font-size: 22px; width: 38px; height: 38px; border-radius: 10px; background: #f3e7d6; color: var(--primary-dark); }
+
+/* ---------- 通用按钮 ---------- */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff;
+  padding: 9px 26px; border-radius: 10px; font-size: 14.5px; font-weight: bold; transition: .2s;
+}
+.btn-primary:hover { filter: brightness(1.08); box-shadow: 0 6px 16px rgba(141,91,63,.4); }
+.btn-ghost { padding: 8px 18px; border-radius: 999px; border: 1px solid var(--line); background: #fff; font-size: 13.5px; color: var(--ink-2); }
+.btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+.btn-block { width: 100%; padding: 12px 0; font-size: 15px; }
+.btn-back {
+  margin: 18px 0 0 20px; padding: 8px 20px; border-radius: 999px; background: #fff;
+  border: 1px solid var(--line); font-size: 14px; color: var(--ink-2);
+}
+.btn-back:hover { border-color: var(--primary); color: var(--primary); }
+
+/* ---------- 筛选 chip ---------- */
+.chip-group { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  padding: 6px 16px; border-radius: 999px; background: #fff; border: 1px solid var(--line);
+  font-size: 13.5px; color: var(--ink-2); transition: .2s;
+}
+.chip:hover { border-color: var(--primary); color: var(--primary); }
+.chip.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+/* ---------- 通用板块标题 ---------- */
+.section-head { text-align: center; margin-bottom: 24px; }
+.section-head h2 { font-size: 26px; color: var(--primary-dark); }
+.section-head h2::after { content: ""; display: block; width: 46px; height: 4px; border-radius: 4px; background: var(--primary); margin: 10px auto 0; }
+.section-head p { color: var(--ink-2); font-size: 14px; margin-top: 10px; }
+
+/* ---------- 空态提示 ---------- */
+.empty-tip { font-size: 13px; color: var(--ink-2); text-align: center; padding: 18px 0; }
+
+/* ---------- 弹窗基础结构 ---------- */
+.modal { position: fixed; inset: 0; z-index: 300; display: flex; align-items: center; justify-content: center; }
+.modal[hidden] { display: none; }
+.modal-mask { position: absolute; inset: 0; background: rgba(20, 12, 4, .6); backdrop-filter: blur(3px); }
+.modal-close {
+  position: absolute; right: 14px; top: 14px; width: 34px; height: 34px; border-radius: 50%;
+  background: #f2e8dc; font-size: 15px; color: var(--ink-2); z-index: 5;
+}
+.modal-close:hover { background: var(--red); color: #fff; }
+
+/* ---------- 页脚（全站共用） ---------- */
+.site-footer {
+  margin-top: 50px; background: #332216; color: #c8b295; text-align: center;
+  padding: 26px 20px; font-size: 13px; line-height: 2;
+}
+
+/* ---------- Toast ---------- */
+#toast {
+  position: fixed; left: 50%; bottom: 60px; transform: translateX(-50%) translateY(30px);
+  background: rgba(30, 20, 8, .9); color: #fff; font-size: 14px;
+  padding: 10px 26px; border-radius: 999px; opacity: 0; pointer-events: none;
+  transition: .3s; z-index: 500; white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---------- 全局响应式 ---------- */
+@media (max-width: 900px) {
+  /* 移动端汉堡菜单导航 */
+  .hamburger { display: inline-flex; align-items: center; justify-content: center; }
+  .main-nav {
+    display: none; position: absolute; left: 0; right: 0; top: 100%;
+    background: #faf3e9; border-bottom: 1px solid var(--line);
+    flex-direction: column; padding: 10px 16px 16px; gap: 4px;
+    box-shadow: 0 16px 30px rgba(90, 55, 25, .15);
+  }
+  .site-header.nav-open .main-nav { display: flex; }
+  .main-nav a { padding: 11px 16px; border-radius: 12px; font-size: 15px; }
+}
+@media (max-width: 560px) {
+  .brand-text small { display: none; }
+  .brand-text strong { font-size: 15px; }
+  .header-inner { padding: 8px 12px; }
+  .user-chip .nick { display: none; }
+}
