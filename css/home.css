@@ -1,0 +1,283 @@
+/* =========================================================
+   首页样式 home.css
+   轮播 / 公告条 / 食堂导航 / 营业时间 / 菜品卡片 / 今日菜单
+   店铺总览 / 特色招牌 / 顾客评价 / 提前点单
+   ========================================================= */
+
+/* ---------- 通用板块容器 ---------- */
+.section { max-width: 1200px; margin: 0 auto; padding: 46px 20px 10px; }
+.section.alt { background: transparent; }
+
+/* ---------- 1. 轮播 Banner ---------- */
+.hero { max-width: 1200px; margin: 18px auto 0; padding: 0 20px; }
+.carousel { position: relative; border-radius: 20px; overflow: hidden; height: 400px; box-shadow: var(--shadow); }
+.carousel-slides { display: flex; height: 100%; transition: transform .6s ease; }
+.carousel-slide { position: relative; min-width: 100%; height: 100%; }
+.carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
+.slide-mask { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,10,0,.15) 0%, rgba(20,10,0,.72) 100%); }
+.slide-info { position: absolute; left: 0; right: 0; bottom: 0; padding: 28px 36px; color: #fff; }
+.slide-tag {
+  display: inline-block; background: var(--red); color: #fff; font-size: 13px;
+  padding: 3px 12px; border-radius: 999px; margin-bottom: 10px; letter-spacing: 1px;
+}
+.slide-info h2 { font-size: 26px; margin-bottom: 8px; text-shadow: 0 2px 8px rgba(0,0,0,.4); }
+.slide-info ul { list-style: none; }
+.slide-info li { font-size: 14.5px; opacity: .95; padding-left: 18px; position: relative; }
+.slide-info li::before { content: "•"; position: absolute; left: 4px; color: var(--primary); }
+.carousel-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 42px; height: 42px; border-radius: 50%;
+  background: rgba(255,255,255,.85); color: var(--primary-dark);
+  font-size: 24px; line-height: 1; display: flex; align-items: center; justify-content: center;
+  transition: .2s; z-index: 5;
+}
+.carousel-arrow:hover { background: var(--primary); color: #fff; }
+.carousel-arrow.prev { left: 14px; }
+.carousel-arrow.next { right: 14px; }
+.carousel-dots { position: absolute; bottom: 14px; right: 20px; display: flex; gap: 8px; z-index: 5; }
+.carousel-dots span { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,.5); cursor: pointer; transition: .2s; }
+.carousel-dots span.on { background: var(--primary); width: 26px; border-radius: 999px; }
+
+/* 公告滚动条 */
+.notice-marquee {
+  margin-top: 12px; background: #fff; border: 1px solid var(--line); border-radius: 999px;
+  display: flex; align-items: center; gap: 10px; padding: 8px 18px; overflow: hidden; box-shadow: var(--shadow);
+}
+.notice-icon { flex: none; }
+.notice-track { overflow: hidden; white-space: nowrap; }
+.notice-track span { display: inline-block; padding-left: 100%; animation: marquee 26s linear infinite; font-size: 13.5px; color: var(--red); }
+@keyframes marquee { to { transform: translateX(-100%); } }
+
+/* ---------- 2. 食堂导航卡片（悬停上浮动画） ---------- */
+.canteen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 20px; }
+.canteen-card {
+  background: var(--card); border-radius: var(--radius); overflow: hidden;
+  box-shadow: var(--shadow); cursor: pointer; transition: .25s; border: 1px solid var(--line);
+}
+.canteen-card:hover { transform: translateY(-6px); box-shadow: 0 14px 30px rgba(109, 68, 44, .20); }
+.canteen-card .cover { position: relative; height: 160px; }
+.canteen-card .cover img { width: 100%; height: 100%; object-fit: cover; }
+.canteen-card .cover .badge { position: absolute; left: 12px; top: 12px; background: rgba(141,91,63,.95); color: #fff; font-size: 12.5px; padding: 3px 12px; border-radius: 999px; }
+.canteen-card .body { padding: 16px; }
+.canteen-card h3 { font-size: 18px; }
+.canteen-card h3 small { color: var(--ink-2); font-weight: normal; margin-left: 6px; font-size: 13px; }
+.canteen-card .loc { font-size: 12.5px; color: var(--ink-2); margin: 4px 0 8px; }
+.canteen-card p { font-size: 13.5px; color: var(--ink-2); }
+.canteen-card .mini-hours { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+.canteen-card .mini-hours span { font-size: 12px; background: #f3e7d6; color: var(--primary-dark); padding: 2px 10px; border-radius: 999px; }
+.canteen-card .enter { margin-top: 14px; font-size: 13.5px; color: var(--primary); font-weight: bold; }
+
+/* ---------- 3. 营业时间 ---------- */
+.hours-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 20px; }
+.hours-card {
+  background: var(--card); border-radius: var(--radius); padding: 20px;
+  box-shadow: var(--shadow); border: 1px solid var(--line); transition: .25s;
+}
+.hours-card:hover { transform: translateY(-4px); }
+.hours-card h3 { font-size: 17px; margin-bottom: 2px; }
+.hours-card .sub { font-size: 12.5px; color: var(--ink-2); margin-bottom: 12px; }
+.hours-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--line); font-size: 14px; }
+.hours-row:last-child { border-bottom: none; }
+.hours-row .t { color: var(--ink-2); }
+.hours-row .v { font-weight: bold; color: var(--primary-dark); }
+.hours-row .v.closed { color: var(--red); }
+.holiday-notice {
+  margin-top: 20px; background: #f7eedd; border: 1px dashed #d9b98c; color: #8a5a2a;
+  border-radius: 12px; padding: 14px 18px; font-size: 13.5px;
+}
+
+/* ---------- 4. 菜品展示：筛选 + 排序 + 收藏 ---------- */
+.filter-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+.fav-toggle { font-size: 13.5px; color: var(--ink-2); display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.fav-toggle input { accent-color: var(--primary); }
+.sort-select {
+  padding: 7px 12px; border-radius: 10px; border: 1px solid var(--line);
+  background: #fff; color: var(--ink-2); outline: none; cursor: pointer;
+}
+.sort-select:focus { border-color: var(--primary); }
+
+/* ---------- 通用菜品卡片（图片统一裁剪比例 object-fit:cover） ---------- */
+.dish-grid, .review-grid, .sig-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; }
+.dish-card {
+  background: var(--card); border-radius: var(--radius); overflow: hidden;
+  box-shadow: var(--shadow); border: 1px solid var(--line); position: relative; transition: .25s; display: flex; flex-direction: column;
+}
+.dish-card:hover { transform: translateY(-4px); box-shadow: 0 12px 26px rgba(109,68,44,.18); }
+.dish-card .pic { position: relative; height: 130px; overflow: hidden; cursor: pointer; }
+.dish-card .pic img { width: 100%; height: 100%; object-fit: cover; transition: .4s; }
+.dish-card:hover .pic img { transform: scale(1.06); }
+.dish-card h4 { font-size: 15px; cursor: pointer; }
+.dish-card h4:hover { color: var(--primary-dark); }
+.dish-card .tag {
+  position: absolute; left: 10px; top: 10px; font-size: 12px; color: #fff;
+  padding: 2px 10px; border-radius: 999px; z-index: 2;
+}
+.tag-辣 { background: var(--red); }
+.tag-微辣 { background: #cd7a2f; }
+.tag-清淡 { background: #5f9c8a; }
+.tag-甜 { background: #d38fa2; }
+.dish-card .special { position: absolute; right: 10px; top: 10px; background: rgba(192,57,43,.92); color: #fff; font-size: 11.5px; padding: 2px 8px; border-radius: 999px; z-index: 2; }
+.dish-card .heart {
+  position: absolute; right: 10px; bottom: 10px; width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,.92); font-size: 16px; line-height: 32px; text-align: center; z-index: 2; transition: .2s;
+}
+.dish-card .heart:hover { transform: scale(1.15); }
+.dish-card .heart.on { color: #d15b4a; }
+.dish-card .body { padding: 12px 14px 14px; flex: 1; display: flex; flex-direction: column; }
+.dish-card .from { font-size: 12px; color: var(--ink-2); margin: 3px 0 8px; }
+.dish-card .foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; }
+.dish-card .price { color: var(--red); font-weight: bold; font-size: 17px; }
+.dish-card .price small { font-size: 12px; }
+.dish-card .stars { color: var(--gold); font-size: 12.5px; }
+.add-btn {
+  margin-top: 10px; width: 100%; padding: 7px 0; border-radius: 10px;
+  background: #f3e7d6; color: var(--primary-dark); font-size: 13px; font-weight: bold; transition: .2s;
+}
+.add-btn:hover { background: var(--primary); color: #fff; }
+
+/* ---------- 5. 今日菜单 ---------- */
+.meal-tabs { display: flex; justify-content: center; gap: 12px; margin-bottom: 22px; flex-wrap: wrap; }
+.meal-tab {
+  padding: 9px 26px; border-radius: 999px; background: #fff; border: 1px solid var(--line);
+  font-size: 14.5px; color: var(--ink-2); transition: .2s;
+}
+.meal-tab.active { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 6px 14px rgba(141,91,63,.35); }
+.date-badge {
+  display: inline-block; font-size: 13px; font-weight: normal; color: var(--ink-2);
+  background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 2px 14px; margin-left: 8px; vertical-align: 4px;
+}
+
+/* ---------- 板块一：店铺与菜品总览 ---------- */
+#shopCanteenFilter { justify-content: center; margin-bottom: 24px; }
+.shop-block { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--line); margin-bottom: 26px; overflow: hidden; }
+.shop-head { display: flex; gap: 18px; align-items: center; padding: 18px 22px; background: linear-gradient(90deg, #f6ecdc, #fdfaf3); border-bottom: 1px solid var(--line); }
+.shop-head img { width: 110px; height: 72px; object-fit: cover; border-radius: 12px; flex: none; }
+.shop-head h3 { font-size: 18px; }
+.shop-head .shop-meta { font-size: 12.5px; color: var(--ink-2); margin: 3px 0; }
+.shop-head .shop-desc { font-size: 13px; color: var(--ink-2); }
+.shop-head .order-link { margin-left: auto; flex: none; }
+.shop-dishes { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; padding: 18px 22px; }
+
+/* ---------- 板块二：特色招牌 ---------- */
+.sig-tabs { display: flex; justify-content: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+.sig-tab {
+  padding: 9px 22px; border-radius: 999px; border: 1px solid var(--line); background: #fff;
+  font-size: 14px; color: var(--ink-2); transition: .2s;
+}
+.sig-tab.active { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 6px 14px rgba(141,91,63,.35); }
+.sig-card {
+  background: var(--card); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+  border: 1px solid var(--line); display: flex; flex-direction: column; transition: .25s;
+}
+.sig-card:hover { transform: translateY(-5px); }
+.sig-card .pic { height: 140px; position: relative; }
+.sig-card .pic img { width: 100%; height: 100%; object-fit: cover; }
+.sig-card .crown { position: absolute; left: 10px; top: 10px; background: rgba(109,68,44,.92); color: #fff; font-size: 12px; padding: 2px 10px; border-radius: 999px; }
+.sig-card .body { padding: 14px 16px; display: flex; flex-direction: column; flex: 1; }
+.sig-card h4 { font-size: 15.5px; }
+.sig-card .from { font-size: 12px; color: var(--ink-2); margin: 3px 0 8px; }
+.sig-card .quote { font-size: 13px; color: #7d5326; background: #f7f0e1; border-left: 3px solid var(--primary); padding: 7px 10px; border-radius: 0 8px 8px 0; margin: 6px 0 10px; }
+.sig-card .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
+.sig-card .price { color: var(--red); font-weight: bold; font-size: 17px; }
+
+/* ---------- 板块三：顾客评价 ---------- */
+.rule-bar {
+  display: flex; gap: 18px; justify-content: center; flex-wrap: wrap;
+  background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px 18px;
+  font-size: 13px; color: var(--ink-2); margin-bottom: 18px;
+}
+.rule-bar strong { color: var(--red); font-size: 15px; }
+#reviewCanteenFilter { justify-content: center; margin-bottom: 20px; }
+.review-card {
+  background: var(--card); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+  border: 1px solid var(--line); cursor: pointer; transition: .25s; display: flex; flex-direction: column;
+}
+.review-card:hover { transform: translateY(-4px); box-shadow: 0 12px 26px rgba(109,68,44,.18); }
+.review-card .pic { height: 120px; position: relative; }
+.review-card .pic img { width: 100%; height: 100%; object-fit: cover; }
+.review-card .count { position: absolute; right: 10px; top: 10px; background: rgba(0,0,0,.55); color: #fff; font-size: 12px; padding: 2px 9px; border-radius: 999px; }
+.review-card .body { padding: 12px 14px; }
+.review-card h4 { font-size: 14.5px; }
+.review-card .from { font-size: 12px; color: var(--ink-2); margin: 2px 0 6px; }
+.review-card .avg { display: flex; align-items: center; gap: 8px; }
+.review-card .avg .stars { color: var(--gold); font-size: 15px; }
+.review-card .avg b { color: var(--primary-dark); font-size: 15px; }
+.review-card .cta { margin-top: 10px; text-align: center; font-size: 12.5px; color: var(--primary); font-weight: bold; }
+
+/* ---------- 板块四：提前点单（购物车 localStorage 持久化） ---------- */
+.order-wrap { display: grid; grid-template-columns: 1fr 320px; gap: 22px; align-items: start; }
+.order-panel { background: var(--card); border-radius: var(--radius); border: 1px solid var(--line); box-shadow: var(--shadow); padding: 22px; }
+.order-step { margin-bottom: 24px; }
+.order-step h3 { font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.order-step h3 i {
+  font-style: normal; width: 24px; height: 24px; border-radius: 50%; background: var(--primary);
+  color: #fff; font-size: 13px; display: inline-flex; align-items: center; justify-content: center;
+}
+.select-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.select-row select {
+  flex: 1; min-width: 180px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px;
+  background: #fff; outline: none;
+}
+.select-row select:focus { border-color: var(--primary); }
+.order-dish-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+.order-dish {
+  display: flex; gap: 10px; align-items: center; border: 1.5px solid var(--line); border-radius: 12px; padding: 8px 10px; background: #fff; transition: .2s;
+}
+.order-dish.picked { border-color: var(--primary); background: #f8f0e2; }
+.order-dish img { width: 52px; height: 52px; border-radius: 9px; object-fit: cover; flex: none; }
+.order-dish .od-info { flex: 1; min-width: 0; }
+.order-dish .od-info h5 { font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.order-dish .od-info .od-price { font-size: 12.5px; color: var(--red); font-weight: bold; }
+.order-dish .qty { display: flex; align-items: center; gap: 6px; flex: none; }
+.order-dish .qty button { width: 22px; height: 22px; border-radius: 6px; background: #f4e9db; font-size: 14px; line-height: 1; color: var(--ink-2); }
+.order-dish .qty button:hover { background: var(--primary); color: #fff; }
+.order-dish .qty span { min-width: 18px; text-align: center; font-size: 13.5px; font-weight: bold; }
+.slot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 9px; }
+.slot {
+  padding: 8px 4px; border-radius: 10px; border: 1.5px solid var(--line); background: #fff;
+  font-size: 13px; text-align: center; color: var(--ink-2); transition: .15s;
+}
+.slot:hover { border-color: var(--primary); color: var(--primary); }
+.slot.on { background: var(--primary); border-color: var(--primary); color: #fff; font-weight: bold; }
+.slot:disabled { background: #f3ede5; color: #c4b6a5; cursor: not-allowed; border-style: dashed; }
+.slot-hint { font-size: 12px; color: var(--ink-2); margin-top: 8px; }
+.order-cart {
+  background: var(--card); border-radius: var(--radius); border: 1px solid var(--line);
+  box-shadow: var(--shadow); padding: 20px; position: sticky; top: 86px;
+}
+.order-cart h3 { font-size: 16px; margin-bottom: 12px; }
+.cart-items { max-height: 260px; overflow-y: auto; margin-bottom: 12px; }
+.cart-item { display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; padding: 6px 0; border-bottom: 1px dashed var(--line); gap: 8px; }
+.cart-item .ci-name { flex: 1; }
+.cart-item .ci-spec { display: block; font-size: 11.5px; color: var(--ink-2); }
+.cart-item .ci-qty { color: var(--ink-2); font-size: 12.5px; }
+.cart-item .ci-price { color: var(--red); font-weight: bold; }
+.cart-total { font-size: 14.5px; padding: 10px 0; border-top: 1px solid var(--line); }
+.cart-total strong { color: var(--red); font-size: 20px; margin-left: 6px; }
+.cart-slot { font-size: 13.5px; color: var(--ink-2); margin-bottom: 14px; }
+.cart-slot strong { color: var(--primary-dark); }
+.my-orders { margin-top: 26px; background: var(--card); border-radius: var(--radius); border: 1px solid var(--line); box-shadow: var(--shadow); padding: 20px 22px; }
+.my-orders h3 { font-size: 16px; margin-bottom: 14px; }
+.order-ticket {
+  display: flex; align-items: center; gap: 18px; border: 1.5px dashed #d9b98c; background: #fbf5ea;
+  border-radius: 12px; padding: 14px 18px; margin-bottom: 12px; flex-wrap: wrap;
+}
+.order-ticket .no { font-size: 24px; font-weight: 900; color: var(--red); letter-spacing: 1px; }
+.order-ticket .ot-info { flex: 1; min-width: 220px; font-size: 13px; color: var(--ink-2); }
+.order-ticket .ot-info b { color: var(--ink); }
+.order-ticket .status { background: #5f9c8a; color: #fff; font-size: 12px; padding: 3px 12px; border-radius: 999px; }
+.order-ticket .cancel { font-size: 12.5px; color: #999; text-decoration: underline; }
+.order-ticket .cancel:hover { color: var(--red); }
+
+/* ---------- 首页响应式 ---------- */
+@media (max-width: 900px) {
+  .order-wrap { grid-template-columns: 1fr; }
+  .order-cart { position: static; }
+  .carousel { height: 320px; }
+}
+@media (max-width: 560px) {
+  .carousel { height: 260px; }
+  .slide-info { padding: 18px 20px; }
+  .slide-info h2 { font-size: 19px; }
+  .section { padding: 34px 14px 8px; }
+}
