@@ -82,7 +82,7 @@ function dishCard(d, opts) {
     '<div class="body">' +
       '<h4 data-detail="' + d.id + '">' + esc(d.name) + '</h4>' +
       '<p class="from">' + shop.name + ' · ' + ct.name + ' ｜ ' + meals + '</p>' +
-      '<p class="kcal-line"><span class="kcal">小份 ≈' + d.kcalS + ' 千卡</span><span class="kcal">大份 ≈' + d.kcalL + ' 千卡</span></p>' +
+      '<p class="kcal-line"><span class="kcal">' + portionLabel(d, 's') + ' ≈' + d.kcalS + ' 千卡</span><span class="kcal">' + portionLabel(d, 'l') + ' ≈' + d.kcalL + ' 千卡</span></p>' +
       '<div class="foot"><span class="price"><small>¥</small>' + d.price + '</span>' +
       '<span class="stars">' + (avgStars(d.id) ? starsText(avgStars(d.id)) : '暂无评分') + '</span></div>' +
       (opts.addBtn ? '<button class="add-btn" data-add="' + d.id + '">＋ 加入点单</button>' : '') +
@@ -234,7 +234,7 @@ function renderSignature() {
       '<div class="pic"><img loading="lazy" src="' + d.image + '" alt="' + esc(d.name) + '"><span class="crown">' + SIG_META[sigTab].title + '</span></div>' +
       '<div class="body"><h4>' + esc(d.name) + '</h4>' +
       '<p class="from">' + shop.name + ' · ' + ct.name + ' ｜ 口味：' + esc(d.tag) + '</p>' +
-      '<p class="kcal-line"><span class="kcal">小份 ≈' + d.kcalS + ' 千卡</span><span class="kcal">大份 ≈' + d.kcalL + ' 千卡</span></p>' +
+      '<p class="kcal-line"><span class="kcal">' + portionLabel(d, 's') + ' ≈' + d.kcalS + ' 千卡</span><span class="kcal">' + portionLabel(d, 'l') + ' ≈' + d.kcalL + ' 千卡</span></p>' +
       '<p class="quote">“' + esc(d.sig[sigTab]) + '”</p>' +
       '<div class="foot"><span class="price"><small>¥</small>' + d.price + '</span>' +
       '<span class="stars">' + starsText(avgStars(d.id)) + '</span></div>' +
@@ -428,10 +428,11 @@ function saveCart() { save('cqust_cart', orderState); }
 const SLOTS = [];
 for (let h = 8; h <= 20; h++) SLOTS.push(String(h).padStart(2, '0') + ':00 - ' + String(h + 1).padStart(2, '0') + ':00');
 
-/* 规格：分量（加价）与辣度（不加价） */
-const SIZE_SPECS = [{ key: '小份', delta: 0 }, { key: '大份', delta: 3 }];
+/* 规格：分量（加价）与辣度（不加价）；个别菜品有专属叫法（豆浆按杯 / 小笼包按个） */
 const SPICY_SPECS = ['标准辣度', '减辣', '加辣'];
-function specPrice(d, spec) { return +(d.price + (spec && spec.indexOf('大份') === 0 ? 3 : 0)).toFixed(1); }
+function portionLabel(d, which) { return (d.portion && d.portion[which]) || (which === 's' ? '小份' : '大份'); }
+function sizeDelta(d) { return (d.portion && typeof d.portion.ld === 'number') ? d.portion.ld : 3; }
+function specPrice(d, spec) { return +(d.price + (spec && spec.indexOf('大') === 0 ? sizeDelta(d) : 0)).toFixed(1); }
 function dishQtyInCart(id) {
   let n = 0;
   Object.values(orderState.items).forEach(it => { if (it.id === id) n += it.qty; });
@@ -487,7 +488,7 @@ function renderOrderDishes() {
     if (step > 0) { addToOrder(id); return; }
     // 减号：优先减“小份”，没有则减该菜任意一种规格
     const keys = Object.keys(orderState.items).filter(k => orderState.items[k].id === id);
-    const key = keys.find(k => orderState.items[k].spec === '小份') || keys[0];
+    const key = keys.find(k => orderState.items[k].spec.indexOf('小') === 0) || keys[0];
     if (!key) return;
     const it = orderState.items[key];
     if (it.qty <= 1) delete orderState.items[key]; else it.qty--;
@@ -619,7 +620,8 @@ function renderServices() {
   $('#svcContacts').innerHTML = '<h3>📞 食堂负责人联系方式</h3>' + CANTEEN_CONTACTS.map(ct => {
     const c = canteenMap[ct.canteen];
     return '<div class="svc-item"><span class="s-label">' + esc(c.name) + '</span>' +
-      '<span class="s-val"><span class="s-phone">' + esc(ct.manager) + '　' + esc(ct.phone) + '</span>' +
+      '<span class="s-val"><span class="s-phone">' + esc(ct.manager) + '　' + esc(ct.phone) +
+      ' <a class="tel-btn" href="tel:' + esc(ct.phone.replace(/\s/g, '')) + '">拨打</a></span>' +
       '<br><small style="font-weight:normal;color:var(--ink-2)">' + esc(ct.duty) + '</small></span></div>';
   }).join('');
   /* 高峰期就餐提示 */
@@ -660,7 +662,7 @@ const ddState = { id: null, size: '小份', spicy: '标准辣度', qty: 1 };
 function openDishDetail(id) {
   const d = dishMap[id];
   if (!d) return;
-  ddState.id = id; ddState.size = '小份'; ddState.spicy = '标准辣度'; ddState.qty = 1;
+  ddState.id = id; ddState.size = portionLabel(d, 's'); ddState.spicy = '标准辣度'; ddState.qty = 1;
   const shop = shopOf(d), ct = canteenOf(d);
   $('#ddImg').src = d.image;
   $('#ddImg').alt = d.name;
@@ -672,9 +674,10 @@ function openDishDetail(id) {
   $('#ddDesc').textContent = (d.sig && (d.sig.manager || d.sig.value || d.sig.student))
     ? '推荐理由：' + (d.sig.manager || d.sig.value || d.sig.student)
     : '来自' + ct.name + '「' + shop.name + '」的现做菜品，口味偏' + d.tag + '，支持提前点单免排队。';
-  // 分量规格
-  $('#specSize').innerHTML = SIZE_SPECS.map(s =>
-    '<button class="spec-opt' + (s.key === '小份' ? ' on' : '') + '" data-size="' + s.key + '">' +
+  // 分量规格（个别菜品用专属叫法，如豆浆 小杯/大杯、小笼包标注个数）
+  const sizes = [{ key: portionLabel(d, 's'), delta: 0 }, { key: portionLabel(d, 'l'), delta: sizeDelta(d) }];
+  $('#specSize').innerHTML = sizes.map(s =>
+    '<button class="spec-opt' + (s.delta ? '' : ' on') + '" data-size="' + s.key + '">' +
     s.key + (s.delta ? ' +¥' + s.delta : '') + '</button>').join('');
   $$('#specSize .spec-opt').forEach(b => b.onclick = () => {
     ddState.size = b.dataset.size;
@@ -701,7 +704,7 @@ function renderDdSum() {
   $('#ddSum').textContent = '¥' + (specPrice(d, ddState.size) * ddState.qty).toFixed(1);
   // 热量随分量联动：小份/大份对应不同千卡值
   const kcalEl = $('#ddKcal');
-  if (kcalEl) kcalEl.textContent = '热量 ≈' + (ddState.size === '大份' ? d.kcalL : d.kcalS) + ' 千卡（' + ddState.size + '）';
+  if (kcalEl) kcalEl.textContent = '热量 ≈' + (ddState.size.indexOf('大') === 0 ? d.kcalL : d.kcalS) + ' 千卡 · ' + ddState.size;
 }
 $('#ddMinus').onclick = () => { ddState.qty = Math.max(1, ddState.qty - 1); renderDdSum(); };
 $('#ddPlus').onclick = () => { ddState.qty = Math.min(99, ddState.qty + 1); renderDdSum(); };
