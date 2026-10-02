@@ -166,6 +166,24 @@ function renderHours() {
    4. 菜品展示（口味筛选 + 价格排序 + 收藏）
    ========================================================= */
 let tasteFilter = '全部';
+/* 分类英文对照（菜单板块标题用，如：面类 NOODLES） */
+const CAT_EN = { 面类: 'NOODLES', 粥品: 'CONGEE', 轻食: 'LIGHT FOOD', 甜品: 'DESSERT', 小吃: 'SNACKS', 汤羹: 'SOUPS', 铁板烧: 'TEPPANYAKI', 烤串: 'BBQ', 饮品: 'DRINKS', 主食: 'STAPLE FOOD', 香锅: 'SPICY POT', 小炒: 'STIR-FRY', 热菜: 'HOT DISHES' };
+/* 菜单式菜品卡：big 为该分类板块的主图（大图），其余为小图 */
+function menuCard(d, big) {
+  const fav = FAVS.has(d.id);
+  const special = (d.weekSpecial || []).includes(new Date().getDay())
+    ? '<span class="special">' + WEEK_CN[new Date().getDay()] + '特供</span>' : '';
+  return '<div class="menu-item' + (big ? ' big' : '') + '">' +
+    '<div class="m-pic" data-detail="' + d.id + '">' +
+      '<img loading="lazy" src="' + d.image + '" alt="' + esc(d.name) + '">' + special +
+      '<span class="cat-ribbon">' + esc(d.cat) + '</span>' +
+      '<button class="heart' + (fav ? ' on' : '') + '" data-id="' + d.id + '" title="收藏">' + (fav ? '❤' : '♡') + '</button>' +
+    '</div>' +
+    '<div class="m-info"><h4 data-detail="' + d.id + '">' + esc(d.name) + '</h4>' +
+      '<span class="price"><small>¥</small>' + d.price + '</span></div>' +
+    '<p class="m-sub"><span class="kcal">' + portionLabel(d, 's') + ' ≈' + d.kcalS + ' 千卡</span><span class="kcal">' + portionLabel(d, 'l') + ' ≈' + d.kcalL + ' 千卡</span></p>' +
+  '</div>';
+}
 function renderDishGrid() {
   let list = DISHES.slice();
   if (tasteFilter !== '全部') list = list.filter(d => d.tag === tasteFilter);
@@ -174,9 +192,20 @@ function renderDishGrid() {
   const mode = $('#dishSort').value;
   if (mode === 'asc') list.sort((a, b) => a.price - b.price);
   if (mode === 'desc') list.sort((a, b) => b.price - a.price);
-  $('#dishGrid').innerHTML = list.length
-    ? list.map(d => dishCard(d)).join('')
-    : '<p class="empty-tip" style="grid-column:1/-1">没有符合条件的菜品～</p>';
+  if (!list.length) { $('#dishGrid').innerHTML = '<p class="empty-tip">没有符合条件的菜品～</p>'; return; }
+  /* 参考菜单排版：按分类分区，每区一个大图 + 多个小图拼版 */
+  const groups = [], idx = {};
+  list.forEach(d => {
+    if (idx[d.cat] == null) { idx[d.cat] = groups.length; groups.push({ cat: d.cat, items: [] }); }
+    groups[idx[d.cat]].items.push(d);
+  });
+  $('#dishGrid').innerHTML = groups.map(g =>
+    '<div class="menu-cat">' +
+      '<div class="menu-cat-head"><h3>' + esc(g.cat) + '</h3><small>' + (CAT_EN[g.cat] || '') + '</small>' +
+      '<span class="m-count">' + g.items.length + ' 道菜品</span></div>' +
+      '<div class="menu-grid">' + g.items.map((d, i) => menuCard(d, i === 0)).join('') + '</div>' +
+    '</div>'
+  ).join('');
 }
 
 /* =========================================================
