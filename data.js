@@ -221,7 +221,13 @@ const KCAL = {
   d44: 310, d45: 350, d46: 260, d47: 390,
   d48: 510, d49: 650, d50: 670, d51: 230
 };
-DISHES.forEach(function (d) { d.image = dishImg(d.en); d.kcal = KCAL[d.id] || 300; });
+DISHES.forEach(function (d) {
+  d.image = dishImg(d.en);
+  const base = KCAL[d.id] || 300;               // 标准份热量
+  d.kcalS = Math.round(base * 0.6 / 5) * 5;     // 小份 ≈ 6 成
+  d.kcalL = Math.round(base * 1.4 / 5) * 5;     // 大份 ≈ 1.4 倍
+  d.kcal = base;
+});
 
 /* ---------------- 便民服务 ---------------- */
 /* 各食堂负责人联系方式 */
