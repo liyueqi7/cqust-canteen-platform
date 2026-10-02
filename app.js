@@ -106,6 +106,11 @@ document.addEventListener('click', e => {
   if (padKey) { dialInput(padKey.dataset.k); return; }
   if (e.target.closest('#dialDel')) { dialBackspace(); return; }
   if (e.target.closest('#dialClose') || e.target.closest('#dialMask')) { closeDialer(); return; }
+  /* 支付密码弹窗（微信支付风格） */
+  const payKey = e.target.closest('#payPad button');
+  if (payKey) { payInput(payKey.dataset.k); return; }
+  if (e.target.closest('#payDel')) { payDel(); return; }
+  if (e.target.closest('#payClose') || e.target.closest('#payMask')) { closePay(); return; }
 });
 
 /* =========================================================
@@ -622,6 +627,20 @@ $('#submitOrder').onclick = () => {
   const keys = Object.keys(orderState.items);
   if (!keys.length) { toast('请先挑选至少一份菜品'); return; }
   if (!orderState.slot) { toast('请选择就餐时段（8:00 - 21:00）'); return; }
+  const shop = shopMap[orderState.shop];
+  let total = 0;
+  keys.forEach(k => { const it = orderState.items[k]; total += specPrice(dishMap[it.id], it.spec) * it.qty; });
+  /* 弹出支付密码弹窗（微信支付风格），密码输完才真正下单 */
+  payPwd = '';
+  $('#payAmount').textContent = money(+total.toFixed(1));
+  $('#payShop').textContent = shop.name + '（' + canteenMap[shop.canteen].name + '）';
+  $('#payStateText').textContent = '正在支付…';
+  setPayState('input');
+  $('#payModal').hidden = false;
+  document.body.style.overflow = 'hidden';
+};
+function finalizeOrder() {
+  const keys = Object.keys(orderState.items);
   const orders = load('cqust_orders', []);
   const shop = shopMap[orderState.shop];
   let total = 0;
@@ -646,8 +665,47 @@ $('#submitOrder').onclick = () => {
   orderState.items = {}; orderState.slot = null;
   saveCart();
   renderOrderDishes(); renderCart(); renderSlots(); renderOrders();
-  toast('点单成功！取号 ' + order.no);
-};
+  toast('支付成功！取号 ' + order.no);
+}
+
+/* ---------- 支付密码弹窗（微信支付风格） ---------- */
+let payPwd = '', payBusy = false;
+function setPayState(st) {
+  const dlg = $('#payDialog');
+  dlg.classList.toggle('paying', st === 'paying');
+  dlg.classList.toggle('paid', st === 'paid');
+  payBusy = st !== 'input';
+}
+function renderPayDots() {
+  $$('#payBoxes span').forEach((b, i) => b.classList.toggle('on', i < payPwd.length));
+}
+function payInput(k) {
+  if (payBusy || payPwd.length >= 6) return;
+  payPwd += k;
+  renderPayDots();
+  if (payPwd.length === 6) {
+    setPayState('paying');
+    setTimeout(() => {
+      setPayState('paid');
+      $('#payStateText').textContent = '支付成功';
+      setTimeout(() => { closePay(); finalizeOrder(); }, 1300);
+    }, 1000);
+  }
+}
+function payDel() {
+  if (payBusy || !payPwd.length) return;
+  payPwd = payPwd.slice(0, -1);
+  renderPayDots();
+}
+function closePay() {
+  if (payBusy && !$('#payDialog').classList.contains('paid')) return; /* 支付处理中不可关闭 */
+  $('#payModal').hidden = true;
+  document.body.style.overflow = '';
+  payPwd = '';
+  setPayState('input');
+  $('#payStateText').textContent = '正在支付…';
+  renderPayDots();
+}
 function renderOrders() {
   const orders = load('cqust_orders', []);
   $('#orderList').innerHTML = orders.length ? orders.map(o =>
