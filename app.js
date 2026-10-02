@@ -99,6 +99,13 @@ document.addEventListener('click', e => {
   if (add) { addToOrder(add.dataset.add); return; }
   const rcard = e.target.closest('.review-row');
   if (rcard) { openDanmaku(rcard.dataset.dish); return; }
+  /* 拨打 → 弹出手机拨号键盘弹窗 */
+  const dialBtn = e.target.closest('[data-dial]');
+  if (dialBtn) { openDialer(dialBtn.dataset.dial, dialBtn.dataset.mgr); return; }
+  const padKey = e.target.closest('.dial-pad button');
+  if (padKey) { dialInput(padKey.dataset.k); return; }
+  if (e.target.closest('#dialDel')) { dialBackspace(); return; }
+  if (e.target.closest('#dialClose') || e.target.closest('#dialMask')) { closeDialer(); return; }
 });
 
 /* =========================================================
@@ -694,7 +701,7 @@ function renderServices() {
     const c = canteenMap[ct.canteen];
     return '<div class="svc-item"><span class="s-label">' + esc(c.name) + '</span>' +
       '<span class="s-val"><span class="s-phone">' + esc(ct.manager) + '　' + esc(ct.phone) +
-      ' <a class="tel-btn" href="tel:' + esc(ct.phone.replace(/\s/g, '')) + '">拨打</a></span>' +
+      ' <button class="tel-btn" data-dial="' + esc(ct.phone.replace(/\s/g, '')) + '" data-mgr="' + esc(c.name + ' · ' + ct.manager) + '">拨打</button></span>' +
       '<br><small style="font-weight:normal;color:var(--ink-2)">' + esc(ct.duty) + '</small></span></div>';
   }).join('');
   /* 高峰期就餐提示 */
@@ -726,6 +733,34 @@ function renderServices() {
     renderServices();
     toast('感谢投稿！我们会转达给食堂负责人 🌟');
   };
+}
+
+/* ---------- 拨打电话弹窗（仿手机拨号键盘） ---------- */
+function openDialer(phone, manager) {
+  $('#dialManager').textContent = manager || '食堂负责人';
+  $('#dialNum').textContent = phone;
+  $('#dialCall').href = 'tel:' + phone.replace(/[^0-9+]/g, '');
+  $('#dialModal').hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+function closeDialer() {
+  $('#dialModal').hidden = true;
+  document.body.style.overflow = '';
+}
+function dialRefresh() {
+  const num = $('#dialNum').textContent;
+  $('#dialCall').href = 'tel:' + num.replace(/[^0-9+]/g, '');
+}
+function dialInput(k) {
+  const el = $('#dialNum');
+  if (el.textContent.length >= 16) return;
+  el.textContent += k;
+  dialRefresh();
+}
+function dialBackspace() {
+  const el = $('#dialNum');
+  el.textContent = el.textContent.slice(0, -1);
+  dialRefresh();
 }
 
 /* =========================================================
