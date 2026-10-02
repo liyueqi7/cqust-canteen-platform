@@ -228,7 +228,7 @@ const SIG_META = {
 };
 function renderSignature() {
   const list = DISHES.filter(d => d.sig && d.sig[sigTab]);
-  $('#sigSlider').innerHTML = list.map((d, i) => {
+  const card = d => {
     const shop = shopOf(d), ct = canteenOf(d);
     return '<div class="sig-card">' +
       '<div class="pic"><img loading="lazy" src="' + d.image + '" alt="' + esc(d.name) + '"><span class="crown">' + SIG_META[sigTab].title + '</span></div>' +
@@ -239,7 +239,9 @@ function renderSignature() {
       '<div class="foot"><span class="price"><small>¥</small>' + d.price + '</span>' +
       '<span class="stars">' + starsText(avgStars(d.id)) + '</span></div>' +
       '<button class="add-btn" data-add="' + d.id + '">＋ 加入点单</button></div></div>';
-  }).join('') || '<p class="empty-tip" style="flex:1">该类招牌整理中…</p>';
+  };
+  /* 渲染两份卡片列表，供自动滑动做无缝循环 */
+  $('#sigSlider').innerHTML = list.length ? (list.map(card).join('') + list.map(card).join('')) : '<p class="empty-tip" style="flex:1">该类招牌整理中…</p>';
   $$('#sigTabs .sig-tab').forEach(t => t.onclick = () => {
     sigTab = t.dataset.sig;
     $$('#sigTabs .sig-tab').forEach(x => x.classList.toggle('active', x === t));
@@ -247,14 +249,36 @@ function renderSignature() {
   });
   initSigSlider();
 }
-/* 招牌滑动：左右箭头 + 鼠标拖拽 + 居中卡片放大突出 */
+/* 招牌自动滑动：匀速向左无缝循环，悬停 / 触摸 / 拖拽时暂停 */
+let sigPaused = false, sigAcc = 0;
 function initSigSlider() {
   const slider = $('#sigSlider');
   slider.scrollLeft = 0;
+  sigAcc = 0;
   highlightCenterCard();
   slider.onscroll = () => window.requestAnimationFrame(highlightCenterCard);
-  $('#sigPrev').onclick = () => slider.scrollBy({ left: -274, behavior: 'smooth' });
-  $('#sigNext').onclick = () => slider.scrollBy({ left: 274, behavior: 'smooth' });
+  /* 悬停暂停绑在整个滑动区容器上，鼠标进入区域即停、移开即续 */
+  const wrap = slider.parentElement;
+  wrap.onmouseenter = () => { sigPaused = true; };
+  wrap.onmouseleave = () => { sigPaused = false; };
+  slider.addEventListener('touchstart', () => { sigPaused = true; }, { passive: true });
+  slider.addEventListener('touchend', () => { sigPaused = false; });
+  if (initSigSlider._raf) cancelAnimationFrame(initSigSlider._raf);
+  const step = () => {
+    /* 卡片列表渲染了两份，滑过前一半后回退，视觉上无缝循环 */
+    const half = slider.scrollWidth / 2;
+    if (half > slider.clientWidth && !sigPaused && !slider.classList.contains('dragging')) {
+      sigAcc += 0.7;
+      const px = Math.floor(sigAcc);
+      if (px > 0) {
+        sigAcc -= px;
+        slider.scrollLeft += px;
+        if (slider.scrollLeft >= half) slider.scrollLeft -= half;
+      }
+    }
+    initSigSlider._raf = window.requestAnimationFrame(step);
+  };
+  step();
 }
 /* 高亮距离滑动区中心最近的卡片 */
 function highlightCenterCard() {
