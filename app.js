@@ -76,7 +76,6 @@ function dishCard(d, opts) {
   return '<div class="dish-card" data-dish="' + d.id + '">' +
     '<div class="pic" data-detail="' + d.id + '">' +
       '<img loading="lazy" src="' + d.image + '" alt="' + esc(d.name) + '">' + special +
-      '<span class="cat-ribbon">' + esc(d.cat) + '</span>' +
       '<button class="heart' + (fav ? ' on' : '') + '" data-id="' + d.id + '" title="收藏">' + (fav ? '❤' : '♡') + '</button>' +
     '</div>' +
     '<div class="body">' +
@@ -175,7 +174,6 @@ function menuCard(d, big) {
   return '<div class="menu-item' + (big ? ' big' : '') + '">' +
     '<div class="m-pic" data-detail="' + d.id + '">' +
       '<img loading="lazy" src="' + d.image + '" alt="' + esc(d.name) + '">' + special +
-      '<span class="cat-ribbon">' + esc(d.cat) + '</span>' +
       '<button class="heart' + (fav ? ' on' : '') + '" data-id="' + d.id + '" title="收藏">' + (fav ? '❤' : '♡') + '</button>' +
     '</div>' +
     '<div class="m-info"><h4 data-detail="' + d.id + '">' + esc(d.name) + '</h4>' +
