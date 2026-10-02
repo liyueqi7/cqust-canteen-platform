@@ -146,6 +146,12 @@
 .menu-item.big .m-info h4 { font-size: 16.5px; white-space: normal; }
 .menu-item .m-info .price { color: var(--red); font-weight: bold; font-size: 15px; flex: none; }
 .menu-item.big .m-info .price { font-size: 18px; }
+.menu-item .m-rec {
+  margin-top: 5px; font-size: 12px; color: var(--primary-dark);
+  background: #f7ecdc; border-radius: 999px; padding: 2px 10px;
+  display: inline-block; align-self: flex-start;
+}
+.menu-item.big .m-rec { font-size: 12.5px; }
 .menu-item .m-sub { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
 .menu-item .m-sub .kcal { font-size: 10.5px; padding: 1px 7px; }
 .dish-card .heart, .menu-item .heart {
