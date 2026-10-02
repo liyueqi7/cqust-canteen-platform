@@ -454,12 +454,21 @@
   width: 10px; height: 10px; border-radius: 50%; background: #1a1a1a;
 }
 .pay-tip { text-align: center; font-size: 11px; color: #b0b0b0; padding: 2px 0 10px; }
-.pay-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #e5e5e5; border-top: 1px solid #e5e5e5; }
-.pay-pad button { height: 46px; background: #fff; font-size: 19px; color: #1a1a1a; border-radius: 0; transition: background .1s; }
-.pay-pad button:hover { background: #f3f3f3; }
-.pay-pad button:active { background: #e8e8e8; }
-.pay-pad .pad-blank { background: #f7f7f7; }
-#payDel { font-size: 16px; }
+/* 手机键盘样式：深色底 + 圆形按键 + 按压反馈 */
+.pay-pad {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  background: linear-gradient(170deg, #3a2c1f, #241a10);
+  padding: 14px 16px 16px; border-top: none;
+}
+.pay-pad button {
+  height: 50px; border-radius: 50%; background: rgba(250,243,233,.95); color: #33261a;
+  font-size: 20px; font-weight: bold; box-shadow: 0 2px 0 rgba(0,0,0,.4); transition: .12s;
+}
+.pay-pad button:hover { background: #fff; }
+.pay-pad button:active { transform: scale(.92); box-shadow: none; }
+.pay-pad .pad-blank { background: transparent; box-shadow: none; }
+#payDel { background: rgba(250,243,233,.22); color: #f8f1e7; font-size: 17px; }
+#payDel:hover { background: rgba(250,243,233,.32); }
 /* 支付中 / 支付成功 状态覆盖层 */
 .pay-state {
   position: absolute; inset: 0; z-index: 5; background: rgba(255,255,255,.97);
