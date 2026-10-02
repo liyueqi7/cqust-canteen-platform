@@ -329,6 +329,13 @@
 .svc-item .s-label { color: var(--ink-2); flex: none; }
 .svc-item .s-val { color: var(--ink); font-weight: bold; }
 .svc-item .s-phone { color: var(--primary); font-weight: bold; }
+/* 拨打按钮（负责人电话旁，手机上点击直接拨号） */
+.tel-btn {
+  display: inline-block; margin-left: 6px; padding: 1px 12px; border-radius: 999px;
+  background: #5f9c8a; color: #fff; font-size: 12px; font-weight: normal;
+  text-decoration: none; transition: .2s;
+}
+.tel-btn:hover { background: #46816e; color: #fff; }
 .svc-item ul { margin: 0; padding-left: 18px; }
 .svc-item ul li { margin: 4px 0; color: var(--ink-2); font-size: 13px; }
 /* 失物招领 */
