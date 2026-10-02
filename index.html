@@ -354,6 +354,29 @@
   </div>
 </div>
 
+<!-- 拨打电话弹窗（仿手机拨号键盘） -->
+<div class="modal" id="dialModal" hidden>
+  <div class="modal-mask" id="dialMask"></div>
+  <div class="dialer">
+    <button class="modal-close" id="dialClose">✕</button>
+    <div class="dial-screen">
+      <small id="dialManager">食堂负责人</small>
+      <div class="dial-num" id="dialNum"></div>
+    </div>
+    <div class="dial-pad">
+      <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+      <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+      <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+      <button data-k="*">*</button><button data-k="0">0</button><button data-k="#">#</button>
+    </div>
+    <div class="dial-actions">
+      <button class="dial-del" id="dialDel" title="删除">⌫</button>
+      <a class="dial-call" id="dialCall" href="tel:">📞 呼叫</a>
+      <span></span>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script src="data.js"></script>
