@@ -76,12 +76,13 @@ function dishCard(d, opts) {
   return '<div class="dish-card" data-dish="' + d.id + '">' +
     '<div class="pic" data-detail="' + d.id + '">' +
       '<img loading="lazy" src="' + d.image + '" alt="' + esc(d.name) + '">' +
-      '<span class="tag tag-' + esc(d.tag) + '">' + esc(d.tag) + '</span>' + special +
+      special +
+      '<span class="cat-ribbon">' + esc(d.cat) + '</span>' +
       '<button class="heart' + (fav ? ' on' : '') + '" data-id="' + d.id + '" title="收藏">' + (fav ? '❤' : '♡') + '</button>' +
     '</div>' +
     '<div class="body">' +
       '<h4 data-detail="' + d.id + '">' + esc(d.name) + '</h4>' +
-      '<p class="from">' + shop.name + ' · ' + ct.name + ' ｜ ' + meals + '</p>' +
+      '<p class="from">' + shop.name + ' · ' + ct.name + ' ｜ ' + meals + ' ｜ 口味：' + esc(d.tag) + '</p>' +
       '<p class="kcal-line"><span class="kcal">' + portionLabel(d, 's') + ' ≈' + d.kcalS + ' 千卡</span><span class="kcal">' + portionLabel(d, 'l') + ' ≈' + d.kcalL + ' 千卡</span></p>' +
       '<div class="foot"><span class="price"><small>¥</small>' + d.price + '</span>' +
       '<span class="stars">' + (avgStars(d.id) ? starsText(avgStars(d.id)) : '暂无评分') + '</span></div>' +
