@@ -236,6 +236,29 @@ const PORTIONS = {
 };
 DISHES.forEach(function (d) { if (PORTIONS[d.id]) d.portion = PORTIONS[d.id]; });
 
+/* 按菜名关键词给菜品归类（用于图片右侧的竖排分类标签，参考菜单排版） */
+const CAT_RULES = [
+  ['面类', /面/],
+  ['粥品', /粥/],
+  ['轻食', /沙拉|酸奶碗|三明治/],
+  ['甜品', /蛋挞|班戟|欧包|提拉米苏|粽子/],
+  ['小吃', /抄手|小笼包|大包|茶叶蛋/],
+  ['汤羹', /汤/],
+  ['铁板烧', /铁板/],
+  ['烤串', /烤|串/],
+  ['饮品', /豆浆|橙汁|牛奶|咖啡|柠檬水/],
+  ['主食', /饭|套餐/],
+  ['香锅', /香锅|干锅|菌菇锅/],
+  ['小炒', /炒|凉拌|回锅肉|西兰花/]
+];
+function dishCat(name) {
+  for (let i = 0; i < CAT_RULES.length; i++) {
+    if (CAT_RULES[i][1].test(name)) return CAT_RULES[i][0];
+  }
+  return '热菜';
+}
+DISHES.forEach(function (d) { d.cat = dishCat(d.name); });
+
 /* ---------------- 便民服务 ---------------- */
 /* 各食堂负责人联系方式 */
 const CANTEEN_CONTACTS = [
