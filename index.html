@@ -33,6 +33,7 @@
       <a href="#signature">特色招牌</a>
       <a href="#reviews">顾客评价</a>
       <a href="#order">提前点单</a>
+      <a href="#services">便民服务</a>
     </nav>
     <div class="header-tools">
       <span class="user-chip" id="userArea" hidden>
@@ -48,6 +49,9 @@
 <main>
 <!-- ==================== 首页视图 ==================== -->
 <div id="homeView">
+
+  <!-- 光盘行动标语（开头，小巧不占地方） -->
+  <div class="clean-plate-strip top">🌾 光盘行动 · 节约粮食 —— 一粥一饭，当思来处不易</div>
 
   <!-- 1. 轮播 Banner -->
   <section class="hero" id="home">
@@ -141,7 +145,12 @@
       <button class="sig-tab" data-sig="value">💰 高性价比 · 好吃不贵</button>
       <button class="sig-tab" data-sig="student">🎓 同学推荐 · 人气之选</button>
     </div>
-    <div class="sig-grid" id="sigGrid"></div>
+    <!-- 横向滑动卡组：左右箭头 + 鼠标拖拽，居中卡片放大突出 -->
+    <div class="sig-slider-wrap">
+      <button class="sig-arrow prev" id="sigPrev" aria-label="往左滑">‹</button>
+      <div class="sig-slider" id="sigSlider"></div>
+      <button class="sig-arrow next" id="sigNext" aria-label="往右滑">›</button>
+    </div>
   </section>
 
   <!-- 板块三：顾客评价（弹幕） -->
@@ -196,14 +205,33 @@
       <div id="orderList"><p class="empty-tip">暂无点单记录，去上面领一个号吧！</p></div>
     </div>
   </section>
+
+  <!-- 板块五：便民服务 -->
+  <section class="section" id="services">
+    <div class="section-head">
+      <h2>便民服务</h2>
+      <p>负责人联系方式 · 高峰提示与排队预估 · 失物招领 · 意见箱投稿</p>
+    </div>
+    <!-- 各食堂排队预估（按当前时间动态计算） -->
+    <div class="queue-strip" id="queueStrip"></div>
+    <div class="svc-grid">
+      <div class="svc-card" id="svcContacts"></div>
+      <div class="svc-card" id="svcPeak"></div>
+      <div class="svc-card" id="svcLost"></div>
+      <div class="svc-card" id="svcOpinion"></div>
+    </div>
+  </section>
+
+  <!-- 光盘行动标语（结尾，小巧不占地方） -->
+  <div class="clean-plate-strip bottom">🍚 光盘行动 · 按需取餐不浪费 —— 节约粮食，从我做起</div>
 </div>
 
 <!-- ==================== 食堂详情视图 ==================== -->
 <div id="canteenView" hidden>
   <button class="btn-back" id="btnBack">← 返回平台首页</button>
-  <div class="canteen-hero" id="canteenHero"></div>
+  <!-- 左侧食堂大图 + 右侧信息面板（参考版式） -->
+  <div class="canteen-detail" id="canteenDetail"></div>
   <div class="canteen-body">
-    <div class="canteen-info-card" id="canteenInfo"></div>
     <h2 class="canteen-sub">🏪 档口与菜品</h2>
     <div id="canteenShops"></div>
   </div>
