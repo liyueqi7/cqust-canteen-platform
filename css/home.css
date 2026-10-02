@@ -17,6 +17,27 @@
 }
 .clean-plate-strip.bottom { margin: 42px auto 6px; }
 
+/* ---------- 平台数据统计条（首页开头，数字滚动） ---------- */
+.stats-strip {
+  max-width: 1200px; margin: 10px auto 0; padding: 0 20px;
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px;
+}
+.stat-cell {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: var(--shadow); padding: 10px 6px;
+}
+.stat-cell .stat-icon { font-size: 20px; }
+.stat-cell .stat-num { display: block; font-size: 16px; color: var(--primary-dark); line-height: 1.2; }
+.stat-cell small { font-size: 11px; color: var(--ink-2); }
+@media (max-width: 900px) {
+  .stats-strip { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 560px) {
+  .stats-strip { grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 0 12px; }
+  .stat-cell { justify-content: flex-start; padding: 8px 12px; }
+}
+
 /* ---------- 1. 轮播 Banner ---------- */
 .hero { max-width: 1200px; margin: 18px auto 0; padding: 0 20px; }
 .carousel { position: relative; border-radius: 20px; overflow: hidden; height: 400px; box-shadow: var(--shadow); }
