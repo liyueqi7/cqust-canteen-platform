@@ -357,6 +357,39 @@
   </div>
 </div>
 
+<!-- 支付密码弹窗（微信支付风格） -->
+<div class="modal" id="payModal" hidden>
+  <div class="modal-mask" id="payMask"></div>
+  <div class="pay-dialog" id="payDialog">
+    <div class="pay-state">
+      <div class="pay-spinner"></div>
+      <p id="payStateText">正在支付…</p>
+    </div>
+    <div class="pay-head">
+      <button class="pay-close" id="payClose">✕</button>
+      <h4>请输入支付密码</h4>
+    </div>
+    <div class="pay-merchant">
+      <span class="pm-logo">🍚</span>
+      <div class="pm-info">
+        <small>重庆科技大学食堂服务平台</small>
+        <b id="payShop"></b>
+      </div>
+      <b class="pm-amount" id="payAmount"></b>
+    </div>
+    <div class="pay-boxes" id="payBoxes">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <p class="pay-tip">🔒 演示环境 · 输入任意 6 位数字即可完成支付</p>
+    <div class="pay-pad" id="payPad">
+      <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+      <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+      <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+      <button class="pad-blank" disabled></button><button data-k="0">0</button><button id="payDel">⌫</button>
+    </div>
+  </div>
+</div>
+
 <!-- 拨打电话弹窗（仿手机拨号键盘） -->
 <div class="modal" id="dialModal" hidden>
   <div class="modal-mask" id="dialMask"></div>
