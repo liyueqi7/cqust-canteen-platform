@@ -117,7 +117,7 @@
 .dish-card:hover .pic img { transform: scale(1.06); }
 .dish-card h4 { font-size: 15px; cursor: pointer; }
 .dish-card h4:hover { color: var(--primary-dark); }
-.dish-card .special { position: absolute; left: 10px; top: 10px; background: rgba(192,57,43,.92); color: #fff; font-size: 11.5px; padding: 2px 8px; border-radius: 999px; z-index: 2; }
+.dish-card .special, .menu-item .special { position: absolute; left: 10px; top: 10px; background: rgba(192,57,43,.92); color: #fff; font-size: 11.5px; padding: 2px 8px; border-radius: 999px; z-index: 2; }
 /* 图片右侧竖排分类标签带（参考菜单排版：深色底 + 白色竖排文字） */
 .cat-ribbon {
   position: absolute; right: 0; top: 12px; z-index: 2;
@@ -126,12 +126,42 @@
   color: #fff; font-size: 11.5px; padding: 10px 5px;
   border-radius: 8px 0 0 8px; box-shadow: 0 3px 10px rgba(30,18,8,.28);
 }
-.dish-card .heart {
+
+/* ---------- 菜品展示：菜单式分区拼版（参考菜单设计图） ---------- */
+.menu-cat { margin-bottom: 38px; }
+.menu-cat-head {
+  display: flex; align-items: baseline; gap: 10px;
+  border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 16px;
+}
+.menu-cat-head h3 { font-size: 21px; color: var(--primary-dark); letter-spacing: 1px; }
+.menu-cat-head h3::before { content: "◆"; color: var(--gold); font-size: 13px; margin-right: 8px; vertical-align: 2px; }
+.menu-cat-head small { letter-spacing: 2.5px; font-size: 11.5px; color: var(--ink-2); }
+.menu-cat-head .m-count { margin-left: auto; font-size: 12px; color: var(--ink-2); }
+.menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.menu-item {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 10px; transition: .25s;
+}
+.menu-item:hover { transform: translateY(-4px); box-shadow: 0 12px 26px rgba(109,68,44,.18); }
+.menu-item.big { grid-column: span 2; }
+.menu-item .m-pic { position: relative; height: 118px; border-radius: 10px; overflow: hidden; cursor: pointer; }
+.menu-item.big .m-pic { height: 216px; }
+.menu-item .m-pic img { width: 100%; height: 100%; object-fit: cover; transition: .4s; }
+.menu-item:hover .m-pic img { transform: scale(1.06); }
+.menu-item .m-info { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 9px; }
+.menu-item .m-info h4 { font-size: 14px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.menu-item .m-info h4:hover { color: var(--primary-dark); }
+.menu-item.big .m-info h4 { font-size: 16.5px; white-space: normal; }
+.menu-item .m-info .price { color: var(--red); font-weight: bold; font-size: 15px; flex: none; }
+.menu-item.big .m-info .price { font-size: 18px; }
+.menu-item .m-sub { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.menu-item .m-sub .kcal { font-size: 10.5px; padding: 1px 7px; }
+.dish-card .heart, .menu-item .heart {
   position: absolute; right: 10px; bottom: 10px; width: 32px; height: 32px; border-radius: 50%;
   background: rgba(255,255,255,.92); font-size: 16px; line-height: 32px; text-align: center; z-index: 2; transition: .2s;
 }
-.dish-card .heart:hover { transform: scale(1.15); }
-.dish-card .heart.on { color: #d15b4a; }
+.heart:hover { transform: scale(1.15); }
+.heart.on { color: #d15b4a; }
 .dish-card .body { padding: 12px 14px 14px; flex: 1; display: flex; flex-direction: column; }
 .dish-card .from { font-size: 12px; color: var(--ink-2); margin: 3px 0 4px; }
 .dish-card .foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; }
@@ -362,5 +392,7 @@
   .slide-info h2 { font-size: 19px; }
   .section { padding: 34px 14px 8px; }
   .sig-card { flex-basis: 205px; }
+  .menu-grid { grid-template-columns: repeat(2, 1fr); }
+  .menu-item.big .m-pic { height: 170px; }
   .clean-plate-strip { font-size: 11.5px; }
 }
