@@ -97,7 +97,7 @@ document.addEventListener('click', e => {
   if (detail) { openDishDetail(detail.dataset.detail); return; }
   const add = e.target.closest('[data-add]');
   if (add) { addToOrder(add.dataset.add); return; }
-  const rcard = e.target.closest('.review-card');
+  const rcard = e.target.closest('.review-row');
   if (rcard) { openDanmaku(rcard.dataset.dish); return; }
 });
 
@@ -382,11 +382,11 @@ function renderReviewCanteenFilter() {
 function renderReviews(canteenId) {
   let list = canteenId ? DISHES.filter(d => canteenOf(d).id === canteenId)
                        : DISHES.filter(d => reviewsOf(d.id).length > 0);
-  $('#reviewGrid').innerHTML = list.map(d => {
+  $('#reviewGrid').innerHTML = list.map((d, i) => {
     const avg = avgStars(d.id), n = reviewsOf(d.id).length;
-    return '<div class="review-card" data-dish="' + d.id + '">' +
-      '<div class="pic"><img loading="lazy" src="' + d.image + '" alt="' + esc(d.name) + '"><span class="count">' + (n ? '💬 ' + n + ' 条评价' : '🙋 抢首评') + '</span></div>' +
-      '<div class="body"><h4>' + esc(d.name) + '</h4>' +
+    return '<div class="review-row' + (i % 2 ? ' flip' : '') + '" data-dish="' + d.id + '">' +
+      '<div class="r-pic"><img loading="lazy" src="' + d.image + '" alt="' + esc(d.name) + '"><span class="count">' + (n ? '💬 ' + n : '🙋 首评') + '</span></div>' +
+      '<div class="r-body"><h4>' + esc(d.name) + '</h4>' +
       '<p class="from">' + shopOf(d).name + ' · ' + canteenOf(d).name + '</p>' +
       '<div class="avg"><span class="stars">' + (n ? starsText(avg) : '☆☆☆☆☆') + '</span><b>' + (n ? avg.toFixed(1) : '暂无') + '</b><span style="font-size:12px;color:var(--ink-2)">/ 5.0</span></div>' +
       '<p class="cta">🖱️ 点击查看弹幕评价 & 写评价</p></div></div>';
