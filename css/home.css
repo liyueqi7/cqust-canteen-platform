@@ -240,21 +240,36 @@
 }
 .rule-bar strong { color: var(--red); font-size: 15px; }
 #reviewCanteenFilter { justify-content: center; margin-bottom: 20px; }
-.review-card {
-  background: var(--card); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
-  border: 1px solid var(--line); cursor: pointer; transition: .25s; display: flex; flex-direction: column;
+/* 顾客评价：菜单式排版（圆形餐盘图在侧边，左右交错，参考设计图） */
+.review-grid { grid-template-columns: repeat(2, 1fr); gap: 16px 24px; }
+.review-row {
+  display: flex; align-items: center; gap: 18px;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 16px 18px; cursor: pointer; transition: .25s;
 }
-.review-card:hover { transform: translateY(-4px); box-shadow: 0 12px 26px rgba(109,68,44,.18); }
-.review-card .pic { height: 120px; position: relative; }
-.review-card .pic img { width: 100%; height: 100%; object-fit: cover; }
-.review-card .count { position: absolute; right: 10px; top: 10px; background: rgba(0,0,0,.55); color: #fff; font-size: 12px; padding: 2px 9px; border-radius: 999px; }
-.review-card .body { padding: 12px 14px; }
-.review-card h4 { font-size: 14.5px; }
-.review-card .from { font-size: 12px; color: var(--ink-2); margin: 2px 0 6px; }
-.review-card .avg { display: flex; align-items: center; gap: 8px; }
-.review-card .avg .stars { color: var(--gold); font-size: 15px; }
-.review-card .avg b { color: var(--primary-dark); font-size: 15px; }
-.review-card .cta { margin-top: 10px; text-align: center; font-size: 12.5px; color: var(--primary); font-weight: bold; }
+.review-row:hover { transform: translateY(-3px); box-shadow: 0 12px 26px rgba(109,68,44,.18); }
+.review-row.flip { flex-direction: row-reverse; }
+.review-row .r-pic { position: relative; flex: none; }
+.review-row .r-pic img {
+  width: 96px; height: 96px; border-radius: 50%; object-fit: cover;
+  border: 4px solid #fff; box-shadow: 0 8px 20px rgba(60,35,15,.24);
+}
+.review-row .r-pic .count {
+  position: absolute; right: -6px; top: -4px; background: rgba(51,34,22,.85); color: #fff;
+  font-size: 11px; padding: 2px 9px; border-radius: 999px; white-space: nowrap;
+}
+.review-row .r-body { flex: 1; min-width: 0; }
+.review-row .r-body h4 { font-size: 15.5px; }
+.review-row .r-body .from { font-size: 12px; color: var(--ink-2); margin: 3px 0 7px; }
+.review-row .r-body .avg { display: flex; align-items: center; gap: 8px; }
+.review-row .r-body .avg .stars { color: var(--gold); font-size: 15px; }
+.review-row .r-body .avg b { color: var(--primary-dark); font-size: 15px; }
+.review-row .r-body .cta { margin-top: 9px; font-size: 12.5px; color: var(--primary); font-weight: bold; }
+@media (max-width: 760px) {
+  .review-grid { grid-template-columns: 1fr; }
+  .review-row .r-pic img { width: 74px; height: 74px; border-width: 3px; }
+  .review-row { gap: 13px; padding: 13px 14px; }
+}
 
 /* ---------- 板块四：提前点单（购物车 localStorage 持久化） ---------- */
 .order-wrap { display: grid; grid-template-columns: 1fr 320px; gap: 22px; align-items: start; }
