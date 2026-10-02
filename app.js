@@ -166,6 +166,27 @@ function renderHours() {
 let tasteFilter = '全部';
 /* 分类英文对照（菜单板块标题用，如：面类 NOODLES） */
 const CAT_EN = { 面类: 'NOODLES', 粥品: 'CONGEE', 轻食: 'LIGHT FOOD', 甜品: 'DESSERT', 小吃: 'SNACKS', 汤羹: 'SOUPS', 铁板烧: 'TEPPANYAKI', 烤串: 'BBQ', 饮品: 'DRINKS', 主食: 'STAPLE FOOD', 香锅: 'SPICY POT', 小炒: 'STIR-FRY', 热菜: 'HOT DISHES' };
+/* 菜品推荐语（带 emoji，招牌菜定制 + 按口味/分类生成） */
+const REC_MAP = {
+  d01: '🔥 香锅界的天花板', d06: '🍜 汤浓面弹', d10: '🍯 蜜汁入味下饭', d12: '🦆 脆皮现烧',
+  d14: '🥟 皮薄汁多', d15: '🥛 现磨更香浓', d24: '🍄 一碗销魂', d27: '🍢 现烤滋滋香',
+  d32: '🥣 暖胃首选', d35: '🫕 双人分享更划算', d44: '🥧 酥到掉渣', d45: '🥭 芒果控必冲',
+  d46: '🥐 低糖更健康', d51: '🍶 酸甜开胃'
+};
+const CAT_REC = {
+  面类: '🍜 现煮出锅', 粥品: '🥣 熬得绵密', 汤羹: '🍲 老火慢炖', 小吃: '🥟 现做热乎',
+  铁板烧: '🍤 铁板镬气足', 烤串: '🍢 滋滋冒油', 饮品: '🥤 现做超新鲜', 轻食: '🥑 轻卡无负担',
+  甜品: '🍮 甜蜜暴击', 主食: '🍽️ 干饭人首选', 香锅: '🔥 香辣过瘾', 小炒: '🥬 锅气十足', 热菜: '🍛 超级下饭'
+};
+function dishRec(d) {
+  if (REC_MAP[d.id]) return REC_MAP[d.id];
+  if (d.weekSpecial && d.weekSpecial.length) return '⭐ 每周限定热卖';
+  if (d.tag === '辣') return '🌶️ 嗜辣星人的爱';
+  if (d.tag === '甜') return '🍡 甜党别错过';
+  if (d.tag === '清淡') return '🌿 清爽低负担';
+  if (CAT_REC[d.cat]) return CAT_REC[d.cat];
+  return '👍 主厨放心推荐';
+}
 /* 菜单式菜品卡：big 为该分类板块的主图（大图），其余为小图 */
 function menuCard(d, big) {
   const fav = FAVS.has(d.id);
@@ -178,6 +199,7 @@ function menuCard(d, big) {
     '</div>' +
     '<div class="m-info"><h4 data-detail="' + d.id + '">' + esc(d.name) + '</h4>' +
       '<span class="price"><small>¥</small>' + d.price + '</span></div>' +
+    '<p class="m-rec">' + dishRec(d) + '</p>' +
     '<p class="m-sub"><span class="kcal">' + portionLabel(d, 's') + ' ≈' + d.kcalS + ' 千卡</span><span class="kcal">' + portionLabel(d, 'l') + ' ≈' + d.kcalL + ' 千卡</span></p>' +
   '</div>';
 }
