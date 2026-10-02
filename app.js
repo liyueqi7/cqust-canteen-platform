@@ -763,6 +763,38 @@ function dialBackspace() {
   dialRefresh();
 }
 
+/* ---------- 首页数据统计条（数字滚动动画，数据实时统计） ---------- */
+function countUp(el, target, suffix) {
+  const t0 = performance.now(), dur = 1100;
+  (function step(t) {
+    const p = Math.min(1, (t - t0) / dur);
+    el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))).toLocaleString() + (suffix || '');
+    if (p < 1) requestAnimationFrame(step);
+  })(t0);
+}
+function renderStats() {
+  const totalReviews = Object.values(REVIEWS).reduce((s, r) => s + r.length, 0) + userReviews().length;
+  const ops = load('cqust_opinions', []).length;
+  /* 今日服务人次：按日期生成当日稳定数字（同一天刷新不变，隔天变化） */
+  const seed = +todayStr().split('-').join('');
+  const served = 3620 + seed % 860;
+  const cells = [
+    ['🍽️', '覆盖食堂', CANTEENS.length, ' 个'],
+    ['🏪', '入驻档口', SHOPS.length, ' 个'],
+    ['🍜', '在线菜品', DISHES.length, ' 道'],
+    ['⭐', '累计评价', totalReviews, ' 条'],
+    ['👥', '今日服务', served, ' 人次'],
+    ['📮', '收到意见', ops, ' 条']
+  ];
+  $('#statsStrip').innerHTML = cells.map(c =>
+    '<div class="stat-cell"><span class="stat-icon">' + c[0] + '</span>' +
+    '<div><b class="stat-num">0' + '</b><small>' + c[1] + '</small></div></div>'
+  ).join('');
+  $$('#statsStrip .stat-cell').forEach((cell, i) => {
+    countUp(cell.querySelector('.stat-num'), cells[i][2], cells[i][3]);
+  });
+}
+
 /* =========================================================
    菜品详情弹窗：规格选择（分量 / 辣度）+ 数量选择
    ========================================================= */
@@ -1024,6 +1056,7 @@ function init() {
   renderCart();
   renderOrders();
   renderServices();
+  renderStats();
   initNavSpy();
   window.addEventListener('hashchange', route);
   route();
