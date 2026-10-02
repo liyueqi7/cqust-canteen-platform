@@ -377,6 +377,35 @@
 .lf-item .lf-info b { font-size: 13.5px; }
 .lf-item .lf-info p { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
 .lf-tip { margin-top: 10px; font-size: 12px; color: #8a6a3f; background: #f7f0e1; border-radius: 8px; padding: 7px 10px; }
+
+/* ---------- 拨打电话弹窗（仿手机拨号键盘） ---------- */
+.dialer {
+  position: relative; width: 300px; max-width: 92vw;
+  background: linear-gradient(170deg, #4a3526, #2b1d10); border-radius: 30px;
+  padding: 28px 22px 22px; box-shadow: 0 24px 60px rgba(20,10,0,.5);
+  display: flex; flex-direction: column; gap: 16px;
+}
+.dialer .modal-close { position: absolute; right: 12px; top: 12px; background: rgba(250,243,233,.15); color: #f8f1e7; }
+.dialer .modal-close:hover { background: var(--red); color: #fff; }
+.dial-screen { background: #f8f1e7; border-radius: 16px; padding: 12px 16px; text-align: center; }
+.dial-screen small { font-size: 11.5px; color: var(--ink-2); display: block; }
+.dial-num { font-size: 21px; font-weight: bold; color: var(--primary-dark); letter-spacing: 1px; margin-top: 2px; min-height: 28px; word-break: break-all; }
+.dial-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.dial-pad button {
+  height: 54px; border-radius: 50%; background: rgba(250,243,233,.14); color: #f8f1e7;
+  font-size: 20px; font-weight: bold; transition: .15s;
+}
+.dial-pad button:hover { background: #d9b98c; color: #3f2b1c; }
+.dial-pad button:active { transform: scale(.92); }
+.dial-actions { display: grid; grid-template-columns: 54px 1fr 54px; gap: 10px; align-items: center; }
+.dial-del { height: 54px; border-radius: 50%; background: rgba(250,243,233,.14); color: #f8f1e7; font-size: 18px; }
+.dial-del:hover { background: var(--red); color: #fff; }
+.dial-call {
+  height: 54px; border-radius: 999px; background: linear-gradient(135deg, #58a26b, #3f8a52);
+  color: #fff; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center;
+  text-decoration: none; letter-spacing: 3px; transition: .2s;
+}
+.dial-call:hover { filter: brightness(1.12); }
 /* 意见箱 */
 .opinion-form textarea {
   width: 100%; min-height: 84px; resize: vertical; border: 1px solid var(--line); border-radius: 10px;
