@@ -8,6 +8,15 @@
 .section { max-width: 1200px; margin: 0 auto; padding: 46px 20px 10px; }
 .section.alt { background: transparent; }
 
+/* ---------- 光盘行动标语条（首页开头 / 结尾，小巧） ---------- */
+.clean-plate-strip {
+  max-width: 1200px; margin: 12px auto 0; padding: 7px 16px;
+  text-align: center; font-size: 12.5px; letter-spacing: 1px; color: #8a6a3f;
+  background: linear-gradient(90deg, #f6ecdc, #fbf5ea, #f6ecdc);
+  border: 1px dashed #dcbc8e; border-radius: 999px;
+}
+.clean-plate-strip.bottom { margin: 42px auto 6px; }
+
 /* ---------- 1. 轮播 Banner ---------- */
 .hero { max-width: 1200px; margin: 18px auto 0; padding: 0 20px; }
 .carousel { position: relative; border-radius: 20px; overflow: hidden; height: 400px; box-shadow: var(--shadow); }
@@ -97,7 +106,7 @@
 .sort-select:focus { border-color: var(--primary); }
 
 /* ---------- 通用菜品卡片（图片统一裁剪比例 object-fit:cover） ---------- */
-.dish-grid, .review-grid, .sig-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; }
+.dish-grid, .review-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; }
 .dish-card {
   background: var(--card); border-radius: var(--radius); overflow: hidden;
   box-shadow: var(--shadow); border: 1px solid var(--line); position: relative; transition: .25s; display: flex; flex-direction: column;
@@ -158,19 +167,31 @@
 .shop-head .order-link { margin-left: auto; flex: none; }
 .shop-dishes { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; padding: 18px 22px; }
 
-/* ---------- 板块二：特色招牌 ---------- */
+/* ---------- 板块二：特色招牌（横向滑动卡组，居中突出） ---------- */
 .sig-tabs { display: flex; justify-content: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
 .sig-tab {
   padding: 9px 22px; border-radius: 999px; border: 1px solid var(--line); background: #fff;
   font-size: 14px; color: var(--ink-2); transition: .2s;
 }
 .sig-tab.active { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 6px 14px rgba(141,91,63,.35); }
-.sig-card {
-  background: var(--card); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
-  border: 1px solid var(--line); display: flex; flex-direction: column; transition: .25s;
+.sig-slider-wrap { position: relative; }
+.sig-slider {
+  display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory;
+  padding: 16px 6px 26px; scrollbar-width: thin; scrollbar-color: #d9c2a4 transparent;
+  cursor: grab; -webkit-overflow-scrolling: touch;
 }
-.sig-card:hover { transform: translateY(-5px); }
-.sig-card .pic { height: 140px; position: relative; }
+.sig-slider.dragging { cursor: grabbing; scroll-snap-type: none; }
+.sig-slider::-webkit-scrollbar { height: 6px; }
+.sig-slider::-webkit-scrollbar-thumb { background: #d9c2a4; border-radius: 999px; }
+.sig-card {
+  flex: 0 0 236px; scroll-snap-align: center;
+  background: var(--card); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+  border: 1px solid var(--line); display: flex; flex-direction: column;
+  transition: transform .35s, box-shadow .35s, opacity .35s; opacity: .82;
+  user-select: none;
+}
+.sig-card.center { transform: scale(1.05) translateY(-4px); opacity: 1; box-shadow: 0 18px 38px rgba(109,68,44,.30); z-index: 2; }
+.sig-card .pic { height: 150px; position: relative; pointer-events: none; }
 .sig-card .pic img { width: 100%; height: 100%; object-fit: cover; }
 .sig-card .crown { position: absolute; left: 10px; top: 10px; background: rgba(109,68,44,.92); color: #fff; font-size: 12px; padding: 2px 10px; border-radius: 999px; }
 .sig-card .body { padding: 14px 16px; display: flex; flex-direction: column; flex: 1; }
@@ -179,6 +200,19 @@
 .sig-card .quote { font-size: 13px; color: #7d5326; background: #f7f0e1; border-left: 3px solid var(--primary); padding: 7px 10px; border-radius: 0 8px 8px 0; margin: 6px 0 10px; }
 .sig-card .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
 .sig-card .price { color: var(--red); font-weight: bold; font-size: 17px; }
+/* 左右滑动箭头 */
+.sig-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 5;
+  width: 42px; height: 42px; border-radius: 50%;
+  background: rgba(255,255,255,.95); color: var(--primary-dark);
+  font-size: 24px; line-height: 1; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 18px rgba(90,55,25,.22); transition: .2s;
+}
+.sig-arrow:hover { background: var(--primary); color: #fff; }
+.sig-arrow.prev { left: -8px; }
+.sig-arrow.next { right: -8px; }
+/* 热量标注（菜品卡片 / 招牌卡片通用） */
+.kcal { font-size: 11.5px; color: #5f9c8a; background: #eef5f0; border-radius: 999px; padding: 1px 8px; white-space: nowrap; }
 
 /* ---------- 板块三：顾客评价 ---------- */
 .rule-bar {
@@ -269,6 +303,56 @@
 .order-ticket .cancel { font-size: 12.5px; color: #999; text-decoration: underline; }
 .order-ticket .cancel:hover { color: var(--red); }
 
+/* ---------- 板块五：便民服务 ---------- */
+.queue-strip {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 12px; margin-bottom: 18px;
+}
+.queue-item {
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px 14px; display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow);
+}
+.queue-item .q-name { font-size: 13.5px; font-weight: bold; color: var(--primary-dark); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.queue-item .q-wait { font-size: 12px; padding: 2px 10px; border-radius: 999px; color: #fff; white-space: nowrap; }
+.q-free { background: #5f9c8a; }
+.q-busy { background: #cd7a2f; }
+.q-peak { background: var(--red); }
+.svc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 18px; align-items: start; }
+.svc-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 20px 22px;
+}
+.svc-card > h3 { font-size: 16px; color: var(--primary-dark); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed var(--line); }
+.svc-item { display: flex; gap: 10px; align-items: baseline; font-size: 13.5px; padding: 7px 0; border-bottom: 1px dashed #f0e6d6; }
+.svc-item:last-child { border-bottom: none; }
+.svc-item .s-label { color: var(--ink-2); flex: none; }
+.svc-item .s-val { color: var(--ink); font-weight: bold; }
+.svc-item .s-phone { color: var(--primary); font-weight: bold; }
+.svc-item ul { margin: 0; padding-left: 18px; }
+.svc-item ul li { margin: 4px 0; color: var(--ink-2); font-size: 13px; }
+/* 失物招领 */
+.lf-item { display: flex; gap: 12px; align-items: flex-start; padding: 9px 0; border-bottom: 1px dashed #f0e6d6; }
+.lf-item:last-child { border-bottom: none; }
+.lf-item .lf-icon { font-size: 22px; flex: none; }
+.lf-item .lf-info { flex: 1; min-width: 0; }
+.lf-item .lf-info b { font-size: 13.5px; }
+.lf-item .lf-info p { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+.lf-tip { margin-top: 10px; font-size: 12px; color: #8a6a3f; background: #f7f0e1; border-radius: 8px; padding: 7px 10px; }
+/* 意见箱 */
+.opinion-form textarea {
+  width: 100%; min-height: 84px; resize: vertical; border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 12px; outline: none; font-size: 13.5px; background: #fffdf9;
+}
+.opinion-form textarea:focus { border-color: var(--primary); }
+.opinion-form .op-row { display: flex; gap: 10px; margin-top: 10px; }
+.opinion-form .op-row input {
+  flex: 1; min-width: 0; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; outline: none; background: #fffdf9;
+}
+.opinion-form .op-row input:focus { border-color: var(--primary); }
+.opinion-list { margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 10px; }
+.opinion-list .op-head { font-size: 12.5px; color: var(--ink-2); margin-bottom: 6px; }
+.opinion-list .op-entry { font-size: 12.5px; color: var(--ink-2); padding: 5px 0; border-bottom: 1px dotted #f0e6d6; }
+.opinion-list .op-entry b { color: var(--primary-dark); }
+
 /* ---------- 首页响应式 ---------- */
 @media (max-width: 900px) {
   .order-wrap { grid-template-columns: 1fr; }
@@ -280,4 +364,7 @@
   .slide-info { padding: 18px 20px; }
   .slide-info h2 { font-size: 19px; }
   .section { padding: 34px 14px 8px; }
+  .sig-card { flex-basis: 205px; }
+  .sig-arrow { display: none; }
+  .clean-plate-strip { font-size: 11.5px; }
 }
