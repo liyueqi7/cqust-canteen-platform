@@ -229,6 +229,13 @@ DISHES.forEach(function (d) {
   d.kcal = base;
 });
 
+/* 个别菜品的专属分量叫法：小笼包按个数标注、豆浆按杯（ld = 大份加价） */
+const PORTIONS = {
+  d14: { s: '小份（6个）', l: '大份（12个）', ld: 5 },
+  d15: { s: '小杯', l: '大杯', ld: 1 }
+};
+DISHES.forEach(function (d) { if (PORTIONS[d.id]) d.portion = PORTIONS[d.id]; });
+
 /* ---------------- 便民服务 ---------------- */
 /* 各食堂负责人联系方式 */
 const CANTEEN_CONTACTS = [
