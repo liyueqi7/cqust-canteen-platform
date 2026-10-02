@@ -81,7 +81,8 @@ function dishCard(d, opts) {
     '</div>' +
     '<div class="body">' +
       '<h4 data-detail="' + d.id + '">' + esc(d.name) + '</h4>' +
-      '<p class="from">' + shop.name + ' · ' + ct.name + ' ｜ ' + meals + ' ｜ <span class="kcal">≈' + d.kcal + ' 千卡</span></p>' +
+      '<p class="from">' + shop.name + ' · ' + ct.name + ' ｜ ' + meals + '</p>' +
+      '<p class="kcal-line"><span class="kcal">小份 ≈' + d.kcalS + ' 千卡</span><span class="kcal">大份 ≈' + d.kcalL + ' 千卡</span></p>' +
       '<div class="foot"><span class="price"><small>¥</small>' + d.price + '</span>' +
       '<span class="stars">' + (avgStars(d.id) ? starsText(avgStars(d.id)) : '暂无评分') + '</span></div>' +
       (opts.addBtn ? '<button class="add-btn" data-add="' + d.id + '">＋ 加入点单</button>' : '') +
@@ -232,7 +233,8 @@ function renderSignature() {
     return '<div class="sig-card">' +
       '<div class="pic"><img loading="lazy" src="' + d.image + '" alt="' + esc(d.name) + '"><span class="crown">' + SIG_META[sigTab].title + '</span></div>' +
       '<div class="body"><h4>' + esc(d.name) + '</h4>' +
-      '<p class="from">' + shop.name + ' · ' + ct.name + ' ｜ 口味：' + esc(d.tag) + ' ｜ <span class="kcal">≈' + d.kcal + ' 千卡</span></p>' +
+      '<p class="from">' + shop.name + ' · ' + ct.name + ' ｜ 口味：' + esc(d.tag) + '</p>' +
+      '<p class="kcal-line"><span class="kcal">小份 ≈' + d.kcalS + ' 千卡</span><span class="kcal">大份 ≈' + d.kcalL + ' 千卡</span></p>' +
       '<p class="quote">“' + esc(d.sig[sigTab]) + '”</p>' +
       '<div class="foot"><span class="price"><small>¥</small>' + d.price + '</span>' +
       '<span class="stars">' + starsText(avgStars(d.id)) + '</span></div>' +
@@ -664,7 +666,7 @@ function openDishDetail(id) {
   $('#ddImg').alt = d.name;
   $('#ddName').textContent = d.name;
   $('#ddMeta').innerHTML = shop.name + ' · ' + ct.name + ' ｜ 口味：' + esc(d.tag) +
-    ' ｜ 热量 ≈' + d.kcal + ' 千卡' +
+    ' ｜ <span id="ddKcal"></span>' +
     ' ｜ <span style="color:#e3a23a">' + (avgStars(id) ? starsText(avgStars(id)) + ' ' + avgStars(id).toFixed(1) + ' 分' : '暂无评分') + '</span>';
   $('#ddPrice').innerHTML = money(d.price) + ' 起';
   $('#ddDesc').textContent = (d.sig && (d.sig.manager || d.sig.value || d.sig.student))
@@ -697,6 +699,9 @@ function renderDdSum() {
   if (!d) return;
   $('#ddNum').textContent = ddState.qty;
   $('#ddSum').textContent = '¥' + (specPrice(d, ddState.size) * ddState.qty).toFixed(1);
+  // 热量随分量联动：小份/大份对应不同千卡值
+  const kcalEl = $('#ddKcal');
+  if (kcalEl) kcalEl.textContent = '热量 ≈' + (ddState.size === '大份' ? d.kcalL : d.kcalS) + ' 千卡（' + ddState.size + '）';
 }
 $('#ddMinus').onclick = () => { ddState.qty = Math.max(1, ddState.qty - 1); renderDdSum(); };
 $('#ddPlus').onclick = () => { ddState.qty = Math.min(99, ddState.qty + 1); renderDdSum(); };
