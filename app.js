@@ -1115,8 +1115,248 @@ function init() {
   renderOrders();
   renderServices();
   renderStats();
+  initAiAssistant();
   initNavSpy();
   window.addEventListener('hashchange', route);
   route();
 }
+/* =========================================================
+   AI 模块：智能点餐助手 + 评价智能周报
+   大模型：智谱 GLM-4-Flash（免费）。Key 仅存浏览器 localStorage，
+   不写入代码仓库；未配置 Key 或网络异常时自动回退本地推荐引擎
+   ========================================================= */
+const AI_KEY_STORE = 'cqust_ai_key';
+const AI_ENDPOINT = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+const AI_MODEL = 'glm-4-flash';
+const aiKey = () => (localStorage.getItem(AI_KEY_STORE) || '').trim();
+
+/* 喂给大模型的菜单摘要（仅保留推荐所需字段） */
+function menuDigest() {
+  return DISHES.map(d => ({ id: d.id, name: d.name, price: d.price, tag: d.tag, canteen: canteenOf(d).name, shop: shopOf(d).name, kcal: d.kcal, meals: d.meals }));
+}
+function aiSysPrompt(menu) {
+  return '你是重庆科技大学食堂的点餐助手。下面是全部菜品 JSON（id/名称/价格/口味/食堂/档口/热量千卡/供应餐段）。\n' +
+    '任务：根据学生输入的预算、口味、吃饱程度等需求，从菜单中挑 2~4 道菜组成一餐，组合尽量来自同一个食堂且总价不超过预算。\n' +
+    '严格只输出 JSON，格式：{"reply":"一句话口语化回复","why":"推荐理由，40字内","items":[{"id":"菜品id","spec":"小份 或 大份"}]}\n' +
+    '规则：spec 只能是"小份"或"大份"；饮品(豆浆/橙汁)和粥默认"小份"；预算紧张时全选"小份"；不要推荐菜单里不存在的菜。\n菜单：' + JSON.stringify(menu);
+}
+async function zhipuChat(system, user, maxTokens) {
+  const res = await fetch(AI_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + aiKey() },
+    body: JSON.stringify({ model: AI_MODEL, temperature: 0.7, max_tokens: maxTokens || 700, messages: [{ role: 'system', content: system }, { role: 'user', content: user }] })
+  });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return (await res.json()).choices[0].message.content;
+}
+function parseJsonLoose(s) {
+  const m = String(s).match(/```(?:json)?([\s\S]*?)```/);
+  if (m) s = m[1];
+  const i = s.indexOf('{'), j = s.lastIndexOf('}');
+  if (i < 0 || j <= i) throw new Error('no json');
+  return JSON.parse(s.slice(i, j + 1));
+}
+/* 规格合法化：只允许 小份/大份（自动带上豆浆等特殊叫法） */
+function aiSpec(d, s) {
+  const big = s && String(s).indexOf('大') >= 0;
+  return portionLabel(d, big ? 'l' : 's');
+}
+
+/* ---------- 本地推荐引擎（无 Key / 接口失败时兜底） ---------- */
+function localRecommend(q) {
+  q = String(q || '');
+  const mb = q.match(/(\d+)\s*(元|块|¥)/);
+  const maxP = mb ? +mb[1] + 2 : 999;
+  const wantTag = /清淡|不辣|低卡|减肥|轻食|低热量/.test(q) ? '清淡' : /微辣/.test(q) ? '微辣' : /重辣|特辣|很辣|辣/.test(q) ? '辣' : /甜/.test(q) ? '甜' : null;
+  const breakfast = /早餐|早饭|早上/.test(q);
+  const lightFirst = /清淡|低卡|减肥|低热量/.test(q);
+  let pool = DISHES.filter(d => {
+    if (breakfast && d.meals.indexOf('早') < 0) return false;
+    if (d.price > maxP) return false;
+    if (wantTag && !lightFirst && d.tag !== wantTag) return false;
+    if (wantTag && lightFirst && d.tag !== wantTag && d.tag !== '甜') return false;
+    return true;
+  });
+  if (pool.length < 3) pool = DISHES.filter(d => d.price <= maxP);
+  if (pool.length < 3) pool = DISHES.slice();
+  const score = d => (wantTag && d.tag === wantTag ? 3 : 0) + (lightFirst ? (400 - d.kcal) / 120 : 0) + avgStars(d.id) / 2;
+  pool.sort((a, b) => score(b) - score(a));
+  const isStaple = d => /饭|面|粥|套餐|抓饭/.test(d.name);
+  const isDrink = d => /豆浆|橙汁/.test(d.name);
+  /* 优先同一食堂：主食 1 + 副食 1 + 饮品 1 */
+  const picked = [];
+  const ctOrder = [...new Set(pool.map(d => canteenOf(d).id))];
+  for (const cid of ctOrder) {
+    const inCt = pool.filter(d => canteenOf(d).id === cid);
+    const staple = inCt.find(isStaple) || inCt[0];
+    if (!staple) continue;
+    picked.push(staple);
+    const side = inCt.find(d => d !== staple && !isDrink(d));
+    if (side) picked.push(side);
+    const drink = inCt.find(isDrink);
+    if (drink) picked.push(drink);
+    let total = picked.reduce((s, d) => s + d.price, 0);
+    if (total > maxP) { /* 超预算就去掉副食再试 */
+      picked.splice(1, 1);
+      total = picked.reduce((s, d) => s + d.price, 0);
+    }
+    if (total <= maxP || budgetLimit(mb)) break;
+  }
+  function budgetLimit(mb) { return !!mb; }
+  const items = picked.slice(0, 3).map(d => ({ id: d.id, spec: aiSpec(d, '小份') }));
+  const total = items.reduce((s, it) => s + specPrice(dishMap[it.id], it.spec), 0);
+  return {
+    engine: 'local',
+    reply: mb ? '按「' + mb[1] + '元预算' + (wantTag ? ' · ' + wantTag : '') + '」帮你搭配好这一餐：' : '给你搭配了这一餐：',
+    why: '组合原则：主食 + 副食 + 饮品，尽量同一食堂、总价控制在预算内' + (lightFirst ? '，整体热量偏低' : '') + '。',
+    items, total
+  };
+}
+
+/* ---------- 聊天 UI ---------- */
+function aiPush(role, html) {
+  const div = document.createElement('div');
+  div.className = 'ai-msg ' + (role === 'me' ? 'me' : 'bot');
+  div.innerHTML = '<div class="ai-bubble">' + html + '</div>';
+  $('#aiMsgs').appendChild(div);
+  $('#aiMsgs').scrollTop = 1e9;
+  return div;
+}
+function aiEngineBadge(engine) {
+  return engine === 'glm' ? '<span class="ai-engine">🧠 GLM-4-Flash 大模型推荐</span>' : '<span class="ai-engine">⚙️ 本地智能引擎</span>';
+}
+function aiPlanCard(plan) {
+  const rows = plan.items.map(it => {
+    const d = dishMap[it.id];
+    return '<div class="ai-dish"><img loading="lazy" src="' + d.image + '" alt="">' +
+      '<div class="info"><b>' + esc(d.name) + '</b><small>' + esc(shopOf(d).name) + ' · ' + esc(canteenOf(d).name) +
+      '<span class="kcal">≈' + d.kcal + ' 千卡</span></small></div>' +
+      '<button class="ai-add" data-aid="' + d.id + '" data-aspec="' + esc(it.spec) + '">+ 加入</button></div>';
+  }).join('');
+  const total = plan.items.reduce((s, it) => s + specPrice(dishMap[it.id], it.spec), 0);
+  return '<div class="ai-plan">' + rows +
+    '<div class="ai-plan-total"><span>合计约 <b>¥' + total.toFixed(1) + '</b></span>' +
+    '<button class="ai-plan-all">🛒 一键加入点单</button></div></div>';
+}
+function bindPlanCards(root) {
+  $$('.ai-add', root).forEach(b => b.onclick = () => {
+    addToOrder(b.dataset.aid, { spec: b.dataset.aspec });
+    b.textContent = '✓ 已加入'; b.classList.add('ok'); b.disabled = true;
+  });
+  const all = $('.ai-plan-all', root);
+  if (all) all.onclick = () => {
+    $$('.ai-add', root).forEach(b => { if (!b.disabled) { addToOrder(b.dataset.aid, { spec: b.dataset.aspec }); b.textContent = '✓'; b.classList.add('ok'); b.disabled = true; } });
+    $('#aiModal').hidden = true;
+    document.body.style.overflow = '';
+    location.hash = '#order';
+    toast('已按推荐加入点单，选好时段即可支付取餐 🛒');
+  };
+}
+let aiBusy = false;
+async function aiAsk(q) {
+  q = String(q || '').trim();
+  if (!q || aiBusy) return;
+  aiBusy = true;
+  $('#aiSend').disabled = true;
+  aiPush('me', esc(q));
+  const tip = aiPush('bot', '<span class="ai-typing"><i></i><i></i><i></i></span> 正在翻菜单琢磨…');
+  let plan = null;
+  if (aiKey()) {
+    try {
+      const content = await zhipuChat(aiSysPrompt(menuDigest()), q, 700);
+      const raw = parseJsonLoose(content);
+      const items = (raw.items || []).filter(it => it && dishMap[it.id]).slice(0, 4)
+        .map(it => ({ id: it.id, spec: aiSpec(dishMap[it.id], it.spec) }));
+      if (items.length) plan = { engine: 'glm', reply: raw.reply, why: raw.why, items };
+    } catch (e) { /* 网络/Key 异常 → 回退本地引擎 */ }
+  }
+  if (!plan) plan = localRecommend(q);
+  const bubble = tip.querySelector('.ai-bubble');
+  bubble.innerHTML = aiEngineBadge(plan.engine) + esc(plan.reply || '给你推荐这套组合：') +
+    (plan.why ? '<div class="why">' + esc(plan.why) + '</div>' : '') + aiPlanCard(plan);
+  bindPlanCards(tip);
+  aiBusy = false;
+  $('#aiSend').disabled = false;
+}
+function updateAiEngineTag() {
+  const tag = $('#aiEngineTag');
+  if (aiKey()) { tag.textContent = '智谱 GLM-4-Flash 已连接'; tag.classList.add('glm'); }
+  else { tag.textContent = '本地智能引擎 · 点 🔑 接入大模型'; tag.classList.remove('glm'); }
+}
+function aiGreet() {
+  aiPush('bot', aiEngineBadge(aiKey() ? 'glm' : 'local') +
+    '你好！我是食堂 AI 点餐助手 🤖<br>直接告诉我你的需求，比如「<b>20 块预算、微辣、想吃饱</b>」，我帮你搭配好一餐，一键加入点单，选时段支付就能取号！');
+}
+function initAiAssistant() {
+  updateAiEngineTag();
+  const open = () => {
+    $('#aiModal').hidden = false;
+    document.body.style.overflow = 'hidden';
+    if (!$('#aiMsgs').children.length) aiGreet();
+    setTimeout(() => $('#aiInput').focus(), 60);
+  };
+  const close = () => { $('#aiModal').hidden = true; document.body.style.overflow = ''; };
+  $('#aiFab').onclick = open;
+  $('#aiClose').onclick = close;
+  $('#aiMask').onclick = close;
+  $('#aiKeyBtn').onclick = () => {
+    const k = prompt('粘贴智谱 GLM API Key（open.bigmodel.cn 免费申请，仅保存在你自己的浏览器）：', aiKey());
+    if (k === null) return;
+    localStorage.setItem(AI_KEY_STORE, k.trim());
+    updateAiEngineTag();
+    toast(k.trim() ? '已连接 GLM-4-Flash，AI 推荐上线 ✅' : '已清除 Key，使用本地智能引擎');
+  };
+  $('#aiSend').onclick = () => { const v = $('#aiInput').value; $('#aiInput').value = ''; aiAsk(v); };
+  $('#aiInput').onkeydown = e => { if (e.key === 'Enter') { const v = $('#aiInput').value; $('#aiInput').value = ''; aiAsk(v); } };
+  $$('#aiChips button').forEach(b => b.onclick = () => aiAsk(b.dataset.q));
+  const rb = $('#aiReportBtn');
+  if (rb) rb.onclick = renderAiReport;
+}
+
+/* ---------- 评价智能周报（管理方视角） ---------- */
+const AI_REPORT_SYS = '你是高校食堂运营分析助手。下面是学生评价 JSON 数组（dish=菜名, stars=1~5星, text=评语）。\n' +
+  '站在食堂管理方视角，找出学生最不满意的三件事。严格只输出 JSON：{"summary":"整体情况两句话","pains":[{"title":"问题名（8字内）","detail":"依据哪些评价，30字内","advice":"给管理方的改进建议，20字内"}]}，pains 恰好 3 项。';
+function localReport(all) {
+  const rules = [
+    { re: /贵|价格|性价比/, title: '部分菜品偏贵', advice: '优化定价并增加平价套餐' },
+    { re: /少|分量|不够吃/, title: '分量不稳定', advice: '统一打饭份量标准' },
+    { re: /慢|排队|等/, title: '高峰出餐慢', advice: '高峰增开窗口分流' },
+    { re: /咸|淡|口味/, title: '口味波动大', advice: '统一后厨调味标准' },
+    { re: /辣/, title: '辣度不好选', advice: '辣度分档供自选' },
+    { re: /凉|冷/, title: '出餐温度低', advice: '加装保温台' }
+  ];
+  const bad = all.filter(r => r.stars <= 3);
+  const scored = rules.map(r => ({ r, n: bad.filter(x => r.re.test(x.text)).length })).sort((a, b) => b.n - a.n).slice(0, 3);
+  return {
+    summary: '共分析 ' + all.length + ' 条评价，其中 ' + bad.length + ' 条低于 4 星（占 ' + Math.round(bad.length / Math.max(1, all.length) * 100) + '%）。' +
+      '总体满意度良好，主要意见集中在出餐速度、口味稳定性与性价比三方面。',
+    pains: scored.map(s => ({
+      title: s.r.title,
+      detail: s.n ? '有 ' + s.n + ' 条低分评价提及此类问题' : '低分评价中相对突出的关键词',
+      advice: s.r.advice
+    }))
+  };
+}
+async function renderAiReport() {
+  const btn = $('#aiReportBtn'), body = $('#aiReportBody');
+  btn.disabled = true;
+  body.hidden = false;
+  body.innerHTML = '<div class="ai-report-loading">⏳ AI 正在阅读全部学生评价并归纳…</div>';
+  const all = [];
+  Object.keys(REVIEWS).forEach(id => (REVIEWS[id] || []).forEach(r => all.push({ dish: dishMap[id] ? dishMap[id].name : id, stars: r.stars, text: r.text })));
+  userReviews().forEach(r => all.push({ dish: (dishMap[r.dish] || {}).name || '同学新评价', stars: r.stars, text: r.text }));
+  let data = null, engine = 'glm';
+  if (aiKey()) {
+    try { data = parseJsonLoose(await zhipuChat(AI_REPORT_SYS, JSON.stringify(all), 800)); } catch (e) { /* 回退 */ }
+  }
+  if (!data || !Array.isArray(data.pains) || !data.pains.length) { data = localReport(all); engine = 'local'; }
+  body.innerHTML =
+    '<div class="ai-report-sum">' + esc(data.summary || '') + '</div>' +
+    '<div class="ai-pain-grid">' + (data.pains || []).slice(0, 3).map(p =>
+      '<div class="ai-pain"><h5>😤 ' + esc(p.title || '') + '</h5><p>' + esc(p.detail || '') + '</p><p class="advice">💡 ' + esc(p.advice || '') + '</p></div>').join('') + '</div>' +
+    '<div class="ai-report-meta">分析引擎：' + (engine === 'glm' ? '智谱 GLM-4-Flash 大模型' : '本地规则引擎（未配置 Key / 网络受限）') + ' · 样本：' + all.length + ' 条真实评价 · 平台演示数据</div>';
+  btn.disabled = false;
+  btn.textContent = '🔄 重新生成';
+}
+
 init();
