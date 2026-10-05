@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/home.css">
   <link rel="stylesheet" href="css/canteen.css">
   <link rel="stylesheet" href="css/modal.css">
+  <link rel="stylesheet" href="css/ai.css">
 </head>
 <body>
 
@@ -166,6 +167,17 @@
     </div>
     <div class="chip-group" id="reviewCanteenFilter"></div>
     <div class="review-grid" id="reviewGrid"></div>
+    <!-- 管理方视角：评价 AI 智能周报 -->
+    <div class="ai-report" id="aiReport">
+      <div class="ai-report-head">
+        <div>
+          <h3>📊 AI 评价周报 <small>给食堂管理方看的运营分析</small></h3>
+          <p>把同学们的真实评价喂给大模型，自动归纳「本周学生最不满意的三件事」与改进建议</p>
+        </div>
+        <button class="btn-primary ai-report-btn" id="aiReportBtn">⚡ 生成 AI 分析</button>
+      </div>
+      <div class="ai-report-body" id="aiReportBody" hidden></div>
+    </div>
   </section>
 
   <!-- 板块四：提前点单 -->
@@ -409,6 +421,34 @@
       <button class="dial-del" id="dialDel" title="删除">⌫</button>
       <a class="dial-call" id="dialCall" href="tel:">📞 呼叫</a>
       <span></span>
+    </div>
+  </div>
+</div>
+
+<!-- AI 智能点餐助手（悬浮按钮 + 聊天弹窗） -->
+<button class="ai-fab" id="aiFab" title="AI 点餐助手">🤖<small>AI点餐</small></button>
+<div class="modal" id="aiModal" hidden>
+  <div class="modal-mask" id="aiMask"></div>
+  <div class="ai-chat">
+    <div class="ai-head">
+      <span class="ai-avatar">🤖</span>
+      <div class="ai-title">
+        <b>AI 点餐助手</b>
+        <small id="aiEngineTag">正在检查引擎…</small>
+      </div>
+      <button class="ai-key-btn" id="aiKeyBtn" title="配置大模型 API Key">🔑</button>
+      <button class="modal-close" id="aiClose">✕</button>
+    </div>
+    <div class="ai-msgs" id="aiMsgs"></div>
+    <div class="ai-chips" id="aiChips">
+      <button data-q="20块预算，微辣，想吃饱">🌶️ 20块吃饱</button>
+      <button data-q="10元以内，随便推荐一顿">💰 10元简餐</button>
+      <button data-q="想吃清淡的，热量低一点">🌿 清淡低卡</button>
+      <button data-q="早餐有什么推荐？">🌅 早餐推荐</button>
+    </div>
+    <div class="ai-input-row">
+      <input id="aiInput" type="text" maxlength="60" placeholder="例如：20块预算、微辣、想吃饱" />
+      <button id="aiSend">发送</button>
     </div>
   </div>
 </div>
